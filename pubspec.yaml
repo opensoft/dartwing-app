@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  dart_wing:
+    git:
+      url: https://farheapsolutions.visualstudio.com/DartWing/_git/DartWing
+      ref: develop
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
