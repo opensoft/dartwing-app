@@ -36,6 +36,15 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def postfix = ''
+                if (variant.buildType.name == "debug") {
+                    postfix = "-" + variant.buildType.name
+                }
+                output.outputFileName =  "dartwing-mobile-" + variant.versionName + postfix + ".apk"
+            }
+        }
     }
 }
 
