@@ -4,6 +4,12 @@ trigger:
     - develop
     - master
 
+resources:
+  repositories:
+    - repository: dartwing
+      name: DartWing/DartWing
+      type: git
+
 stages:
 - stage: BUILD
   jobs:
@@ -14,8 +20,12 @@ stages:
       vmImage: ubuntu-latest
 
     steps:
+    - checkout: dartwing
+      path: s/lib/dart_wing
     - checkout: self
       submodules: recursive
+      path: s
+      workspaceRepo: true
     
     - task: DownloadSecureFile@1
       name: appReturns_jks
@@ -38,6 +48,7 @@ stages:
     - script: |
         mv $(appReturns_jks.secureFilePath) /tmp/appReturns.jks
         mv $(key_properties.secureFilePath) android/key.properties
+        echo $(Build.Repository.LocalPath)
       displayName: 'Prepare security files'
 
     - task: FlutterInstall@0
@@ -49,13 +60,13 @@ stages:
     - task: FlutterBuild@0
       inputs:
         target: 'aab'
-        projectDirectory: '$(Build.SourcesDirectory)'
+        projectDirectory: '$(Build.Repository.LocalPath)'
         buildNumber: '$(Build.BuildID)'
         apkTargetPlatform: 'android-arm64'
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/build/app/outputs/bundle/release/app-release.aab'
+        PathtoPublish: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         ArtifactName: 'dartwing-mobile-aab'
         publishLocation: 'Container'
 
@@ -64,7 +75,7 @@ stages:
         authType: 'JsonFile'
         serviceAccountKey: '$(google_service.secureFilePath)'
         applicationId: 'com.opensoft.dartwing'
-        bundleFile: '$(Build.SourcesDirectory)/build/app/outputs/bundle/release/app-release.aab'
+        bundleFile: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         track: 'internal'
         releaseName: '$(Build.BuildID)'
       continueOnError: true
@@ -76,7 +87,7 @@ stages:
         authType: 'JsonFile'
         serviceAccountKey: '$(google_service.secureFilePath)'
         applicationId: 'com.opensoft.dartwing'
-        bundleFile: '$(Build.SourcesDirectory)/build/app/outputs/bundle/release/app-release.aab'
+        bundleFile: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         track: 'production'
         releaseName: '$(Build.BuildID)'
       continueOnError: true
@@ -86,12 +97,12 @@ stages:
     - task: FlutterBuild@0
       inputs:
         target: 'apk'
-        projectDirectory: '$(Build.SourcesDirectory)'
+        projectDirectory: '$(Build.Repository.LocalPath)'
         buildNumber: '$(Build.BuildID)'
         apkTargetPlatform: 'android-arm64'
 
     - script: | 
-        cp $(Build.SourcesDirectory)/build/app/outputs/apk/release/*.apk $(build.artifactstagingdirectory)
+        cp $(Build.Repository.LocalPath)/build/app/outputs/apk/release/*.apk $(build.artifactstagingdirectory)
         find $(build.artifactstagingdirectory) -depth -name "dartwing-mobile*.apk" -exec sh -c 'f="{}"; mv -- "$f" "${f%.apk}-$(Build.BuildId).apk"' \;
         
     - task: PublishBuildArtifacts@1
