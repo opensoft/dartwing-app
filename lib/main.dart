@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'dart_wing/core/globals.dart';
 import 'dart_wing/core/persistent_storage.dart';
 import 'dart_wing/gui/base_apps_routers.dart';
+import 'dart_wing/gui/widgets/base_colors.dart';
 import 'dart_wing/network/network_clients.dart';
 import 'dart_wing/network/paper_trail.dart';
 
@@ -60,18 +62,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //navigatorKey: navigatorKey,
       title: Globals.applicationInfo.appName,
-      initialRoute: BaseAppsRouters.loginPage,
-      onGenerateRoute: BaseAppsRouters().generateRouters,
+      initialRoute: DartWingAppsRouters.loginPage,
+      onGenerateRoute: DartWingAppsRouters().generateRouters,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            surface: const Color.fromRGBO(11, 32, 79, 110),
-            seedColor: const Color.fromRGBO(11, 32, 79, 110),
-          ),
-          useMaterial3: false),
+          //colorScheme: ColorScheme.fromSeed(
+          //  surface: const Color.fromRGBO(11, 32, 79, 110),
+          //  seedColor: const Color.fromRGBO(11, 32, 79, 110),
+          //),
+          useMaterial3: true),
     );
   }
 }
