@@ -142,9 +142,7 @@ class _AddUserInfoPageState extends State<AddUserInfoPage> {
                     onPressed: _errorMessage == null &&
                             _emailController.text.isNotEmpty
                         ? () {
-                            // TODO: request OTP by email and went to next page
-                            Navigator.of(context)
-                                .pushNamed(DartWingAppsRouters.homePage);
+                            Navigator.of(context).pop(true);
                           }
                         : null,
                     child: Row(children: [

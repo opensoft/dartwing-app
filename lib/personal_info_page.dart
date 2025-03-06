@@ -2,7 +2,9 @@ import 'dart:core';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 
+import 'dart_wing/core/globals.dart';
 import 'dart_wing/gui/widgets/base_colors.dart';
 import 'dart_wing/gui/widgets/base_scaffold.dart';
 
@@ -22,53 +24,26 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   final _focusNode = FocusNode();
   String? _errorMessageCompanyName;
 
-  void _addNewEmail() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _emailControllersList.add(TextEditingController());
-      _errorMessagesList.add(null);
-    });
-  }
+  final TextEditingController _firstNameController = TextEditingController(
+      text: Globals.applicationInfo.username.split(" ").first);
+  final TextEditingController _lastNameController = TextEditingController(
+      text: Globals.applicationInfo.username.split(" ").last);
+  final TextEditingController _emailController =
+      TextEditingController(text: Globals.applicationInfo.userEmail);
+  final TextEditingController _cellPhoneController = TextEditingController();
+  String? _errorMessage;
 
-  void _removeEmail(int index) {
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      if (index < _emailControllersList.length) {
-        _emailControllersList.removeAt(index);
-      }
-      if (index < _errorMessagesList.length) {
-        _errorMessagesList.removeAt(index);
-      }
-    });
-  }
-
-  List<String> _emails() {
-    for (var error in _errorMessagesList) {
-      if (error != null) {
-        return [];
-      }
-    }
-    List<String> emails = [];
-    for (var controller in _emailControllersList) {
-      if (controller.text != null && controller.text.isNotEmpty) {
-        emails.add(controller.text);
-      }
-    }
-    return emails;
-  }
-
-  _checkEmailAddress(int index) {
-    if (EmailValidator.validate(_emailControllersList[index].text)) {
-      _errorMessagesList[index] = null;
+  _checkEmailAddress(String email) {
+    if (EmailValidator.validate(email)) {
+      _errorMessage = null;
     } else {
-      _errorMessagesList[index] = "Enter valid email address";
+      _errorMessage = "Enter valid email address";
     }
     setState(() {});
   }
 
   @override
   void initState() {
-    _addNewEmail();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => FocusScope.of(context).requestFocus(_focusNode));
@@ -81,17 +56,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       appBar: AppBar(
         backgroundColor: BaseColors.lightBackgroundColor,
         title: Row(children: [
-          Expanded(child: Text("Account Info", textAlign: TextAlign.center)),
+          Expanded(child: Text("Personal info", textAlign: TextAlign.center)),
           InkWell(
             onTap: () {},
             child: Text(
               "Edit",
-              style: TextStyle(
-                  color: _errorMessageCompanyName == null &&
-                          _textController.text.isNotEmpty &&
-                          _emails().isNotEmpty
-                      ? Colors.white
-                      : Colors.grey),
             ),
           )
         ]),
@@ -100,23 +69,73 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            TextField(
-              controller: _textController,
-              focusNode: _focusNode,
-              readOnly: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: "Name",
-                labelStyle: const TextStyle(color: Colors.grey),
-                counterStyle: const TextStyle(color: Colors.grey),
-                hintText: "Enter user name",
-                errorText: _errorMessageCompanyName,
-                hintStyle: const TextStyle(color: Colors.white24),
-                border: const OutlineInputBorder(),
-              ),
-              onTapAlwaysCalled: true,
-              onChanged: (text) {},
-            ),
+            Flexible(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      //keyboardType: TextInputType.emailAddress,
+                      controller: _firstNameController,
+                      //style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "First Name",
+                        //labelStyle: const TextStyle(color: Colors.grey),
+                        hintText: "[Firstname]",
+                        //hintStyle: const TextStyle(color: Colors.white24),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ))),
+            Flexible(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      //keyboardType: TextInputType.emailAddress,
+                      controller: _lastNameController,
+                      //style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "Last Name",
+                        //labelStyle: const TextStyle(color: Colors.grey),
+                        hintText: "[Lastname]",
+                        //hintStyle: const TextStyle(color: Colors.white24),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ))),
+            Flexible(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: _emailController,
+                      //style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "Personal Email",
+                        //labelStyle: const TextStyle(color: Colors.grey),
+                        hintText: "E-mail",
+                        //hintStyle: const TextStyle(color: Colors.white24),
+                        errorText: _errorMessage,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (text) {
+                        _checkEmailAddress(_emailController.text);
+                      },
+                    ))),
+            Flexible(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      keyboardType: TextInputType.phone,
+                      controller: _cellPhoneController,
+                      autocorrect: false,
+                      inputFormatters: [
+                        MaskedInputFormatter('+# #### ### ###')
+                      ],
+                      decoration: InputDecoration(
+                        labelText: "Cell Phone",
+                        //labelStyle: const TextStyle(color: Colors.grey),
+                        hintText: "[Cell Phone]",
+                        //hintStyle: const TextStyle(color: Colors.white24),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ))),
           ],
         ),
       ),

@@ -11,6 +11,9 @@ import 'dart_wing/gui/base_apps_routers.dart';
 import 'dart_wing/network/paper_trail.dart';
 import 'home_page.dart';
 import 'login_page.dart';
+import 'organization/add_organization_page.dart';
+import 'organization/company_organization_page.dart';
+import 'organization/organizations_list_page.dart';
 import 'otp_login_page.dart';
 
 class DartWingAppsRouters extends BaseAppsRouters {
@@ -21,6 +24,10 @@ class DartWingAppsRouters extends BaseAppsRouters {
   static const String loginWithEmailPage = 'loginWithEmailPage';
   static const String otpLoginPage = 'otpLoginPage';
   static const String addUserInfoPage = 'addUserInfoPage';
+
+  static const String organizationsListPage = 'organizationsListPage';
+  static const String addOrganizationPage = 'addOrganizationPage';
+  static const String companyOrganizationPage = 'companyOrganizationPage';
 
   @override
   static Future<dynamic> showScannerPage(BuildContext context, String pageTitle,
@@ -47,6 +54,15 @@ class DartWingAppsRouters extends BaseAppsRouters {
         return MaterialPageRoute(builder: (_) => const OtpLoginPage());
       case addUserInfoPage:
         return MaterialPageRoute(builder: (_) => const AddUserInfoPage());
+      case organizationsListPage:
+        return MaterialPageRoute(builder: (_) => const OrganizationsListPage());
+      case addOrganizationPage:
+        return MaterialPageRoute(builder: (_) => const AddOrganizationPage());
+      case companyOrganizationPage:
+        return MaterialPageRoute(
+            builder: (_) => CompanyOrganizationPage(
+                  organizationName: settings.arguments.toString(),
+                ));
       default:
         return super.generateRouters(settings);
     }

@@ -48,11 +48,11 @@ class _HomePageState extends State<HomePage> {
     return Container(
       color: BaseColors.lightBackgroundColor,
       child: TabBar(
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          //labelColor: Colors.white,
+          //unselectedLabelColor: Colors.white70,
           indicatorSize: TabBarIndicatorSize.tab,
           indicatorPadding: const EdgeInsets.all(5.0),
-          indicatorColor: Colors.blue,
+          //indicatorColor: Colors.blue,
           //labelStyle: TextStyle(fontSize: 12),
           tabs: _tabs()),
     );
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
             padding: const EdgeInsets.all(10),
             child: Container(
-              color: Colors.blueGrey,
+              color: Colors.grey,
             )));
   }
 
@@ -113,9 +113,12 @@ class _HomePageState extends State<HomePage> {
                       .pushNamed(DartWingAppsRouters.personalInfoPage);
                 }),
             SidebarXItem(
-                icon: Icons.highlight_remove,
+                icon: Icons.people_alt,
                 label: 'Organizations',
-                onTap: () {}),
+                onTap: () {
+                  Navigator.of(context)
+                      .pushNamed(DartWingAppsRouters.organizationsListPage);
+                }),
           ],
           onBarcodeFetched: (barcode) {},
           body: SafeArea(

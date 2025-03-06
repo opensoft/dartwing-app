@@ -124,8 +124,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(Globals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}");
       return Navigator.of(context)
           .pushNamed(DartWingAppsRouters.addUserInfoPage)
-          .then((_) {
-        return _logout();
+          .then((result) {
+        if (result == null) {
+          return _logout();
+        } else {
+          return Navigator.of(context).pushNamed(DartWingAppsRouters.homePage,
+              arguments: "Some organization");
+        }
       }).then((_) {
         setState(() {
           _loadingOverlayEnabled = false;
