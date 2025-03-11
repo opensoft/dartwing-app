@@ -111,4 +111,78 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         ArtifactName: 'dartwing-mobile-apk'
         publishLocation: 'Container'
-      
+
+  - job: BuildJobIOS
+    pool:
+      vmImage: macos-13
+
+    steps:
+    - checkout: dartwing
+      path: s/lib/dart_wing
+    - checkout: self
+      submodules: recursive
+      path: s
+      workspaceRepo: true
+
+    - task: FlutterInstall@0
+      inputs:
+        channel: 'stable'
+        version: 'custom'
+        customVersion: $(FLUTTER)
+      enabled: true
+
+    - task: InstallAppleCertificate@2
+      inputs:
+        certSecureFile: 'ios_appioscer.p12'
+        certPwd: '$(IOS_CERPASSWD)'
+        keychain: 'temp'
+        deleteCert: true
+    
+    - task: InstallAppleProvisioningProfile@1
+      displayName: "Install Apple Mobile Provisioning Profile"
+      inputs:
+        provisioningProfileLocation: "secureFiles"
+        provProfileSecureFile: "ios_dartwing_mobile.mobileprovision"
+        removeProfile: true
+        
+    - task: DownloadSecureFile@1
+      name: AuthKey_SSF5Y9HTD9
+      displayName: 'Download key.properties'
+      inputs:
+        secureFile: 'ios_AuthKey_SSF5Y9HTD9.p8'
+
+    - script: |
+        # pip install
+        pip3 install codemagic-cli-tools
+        # export environments
+        export APP_STORE_CONNECT_PRIVATE_KEY=`cat $(AuthKey_SSF5Y9HTD9.secureFilePath)`
+        # xcode   use profile
+        cd $(Build.SourcesDirectory)
+        xcode-project use-profiles
+        # flutter packages
+        /Users/runner/hostedtoolcache/Flutter/$(FLUTTER)/macos/flutter/bin/flutter packages pub get
+        # find Podfile
+        find . -name 'Podfile' -execdir pod install
+        # flutter build
+        /Users/runner/hostedtoolcache/Flutter/$(FLUTTER)/macos/flutter/bin/flutter build ipa --release --export-options-plist=/Users/runner/export_options.plist
+      displayName: 'Build application'
+        
+    - script: |
+        # export environments
+        export APP_STORE_CONNECT_PRIVATE_KEY=`cat $(AuthKey_SSF5Y9HTD9.secureFilePath)`
+        # app store connect
+        app-store-connect publish --path $(find $(pwd) -name "*.ipa")
+        # keychain
+        keychain use-login
+      displayName: 'Public application'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+    - task: CopyFiles@2
+      inputs:
+        contents: '**/*.ipa'
+        targetFolder: '$(build.artifactStagingDirectory)'
+        OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        artifactName: 'dartwing-mobile-ios'
