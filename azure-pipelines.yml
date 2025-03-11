@@ -77,7 +77,7 @@ stages:
         applicationId: 'com.opensoft.dartwing'
         bundleFile: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         track: 'internal'
-        isDraftRelease: true
+        #isDraftRelease: true
         releaseName: '$(Build.BuildID)'
       continueOnError: true
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
