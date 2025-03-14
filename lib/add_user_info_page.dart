@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:dart_wing_mobile/dart_wing/network/network_clients.dart';
 import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'dart_wing/core/globals.dart';
 import 'dart_wing/gui/widgets/base_colors.dart';
 import 'dart_wing/gui/widgets/base_scaffold.dart';
+import 'dart_wing/network/dart_wing/data/user.dart';
 
 class AddUserInfoPage extends StatefulWidget {
   const AddUserInfoPage({super.key});
@@ -140,9 +142,20 @@ class _AddUserInfoPageState extends State<AddUserInfoPage> {
                       minimumSize: const Size.fromHeight(60),
                     ),
                     onPressed: _errorMessage == null &&
-                            _emailController.text.isNotEmpty
+                            _emailController.text.isNotEmpty &&
+                            _firstNameController.text.isNotEmpty &&
+                            _lastNameController.text.isNotEmpty
                         ? () {
-                            Navigator.of(context).pop(true);
+                            User user = User();
+                            user.firstName = _firstNameController.text;
+                            user.lastName = _lastNameController.text;
+                            user.email = _emailController.text;
+                            user.phoneNumber = _cellPhoneController.text;
+                            NetworkClients.dartWingApi
+                                .createUser(user)
+                                .then((user) {
+                              Navigator.of(context).pop(user);
+                            });
                           }
                         : null,
                     child: Row(children: [

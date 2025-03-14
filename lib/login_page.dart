@@ -122,7 +122,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           "Token ${Globals.keycloakWrapper.accessToken.toString()}");
       PaperTrailClient.sendInfoMessageToPaperTrail(
           "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(Globals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}");
-      return Navigator.of(context)
+      return NetworkClients.dartWingApi.fetchUser().catchError((e) {
+        return Navigator.of(context)
+            .pushNamed(DartWingAppsRouters.addUserInfoPage);
+      });
+
+      Navigator.of(context)
           .pushNamed(DartWingAppsRouters.addUserInfoPage)
           .then((result) {
         if (result == null) {
@@ -131,13 +136,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           return Navigator.of(context).pushNamed(DartWingAppsRouters.homePage,
               arguments: "Some organization");
         }
-      }).then((_) {
-        setState(() {
-          _loadingOverlayEnabled = false;
-        });
       });
-    });
-    /*
     }).then((user) {
       setState(() {
         _loadingOverlayEnabled = false;
@@ -162,8 +161,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         setState(() {});
       }
     });
-
-       */
   }
 
   @override
