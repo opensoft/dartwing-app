@@ -123,8 +123,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       PaperTrailClient.sendInfoMessageToPaperTrail(
           "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(Globals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}");
       return NetworkClients.dartWingApi.fetchUser().catchError((e) {
-        return Navigator.of(context)
-            .pushNamed(DartWingAppsRouters.addUserInfoPage);
+        return Navigator.of(context).pushNamed(DartWingAppsRouters.homePage);
       });
 
       Navigator.of(context)
@@ -222,7 +221,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
             ),
             Expanded(
                 child: SvgPicture.asset(
-              'lib/dart_wing/images/dart_wing_icon.svg',
+              'lib/dart_wing/gui/images/dart_wing_icon.svg',
               alignment: Alignment.center,
               //width: 50,
             )),

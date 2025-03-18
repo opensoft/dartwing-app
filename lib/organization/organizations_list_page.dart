@@ -36,7 +36,7 @@ class _OrganizationsListPageState extends State<OrganizationsListPage> {
             borderRadius: BorderRadius.circular(15),
             onTap: () {
               Navigator.of(context)
-                  .pushNamed(DartWingAppsRouters.addOrganizationPage);
+                  .pushNamed(DartWingAppsRouters.selectOrganizationTypePage);
             },
             child: Container(
                 decoration: BoxDecoration(

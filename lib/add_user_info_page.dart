@@ -150,7 +150,9 @@ class _AddUserInfoPageState extends State<AddUserInfoPage> {
                             user.firstName = _firstNameController.text;
                             user.lastName = _lastNameController.text;
                             user.email = _emailController.text;
-                            user.phoneNumber = _cellPhoneController.text;
+                            if (_cellPhoneController.text.isNotEmpty) {
+                              user.phoneNumber = _cellPhoneController.text;
+                            }
                             NetworkClients.dartWingApi
                                 .createUser(user)
                                 .then((user) {

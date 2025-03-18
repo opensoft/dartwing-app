@@ -1,21 +1,24 @@
 import 'dart:core';
 
+import 'package:dart_wing_mobile/dart_wing/gui/gui_helper.dart';
 import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../dart_wing/gui/widgets/base_colors.dart';
 import '../dart_wing/gui/widgets/base_scaffold.dart';
+import '../dart_wing/network/dart_wing/dart_wing_api_helper.dart';
 
-class AddOrganizationPage extends StatefulWidget {
-  const AddOrganizationPage({super.key});
+class SelectOrganizationTypePage extends StatefulWidget {
+  const SelectOrganizationTypePage({super.key});
 
   @override
-  _AddOrganizationPageState createState() => _AddOrganizationPageState();
+  _SelectOrganizationTypePageState createState() =>
+      _SelectOrganizationTypePageState();
 }
 
-enum OrganizationType { company, family, club, nonprofit }
-
-class _AddOrganizationPageState extends State<AddOrganizationPage> {
+class _SelectOrganizationTypePageState
+    extends State<SelectOrganizationTypePage> {
   bool _loadingOverlayEnabled = false;
   final TextEditingController _organizationNameController =
       TextEditingController();
@@ -63,7 +66,13 @@ class _AddOrganizationPageState extends State<AddOrganizationPage> {
                       ),
                     ))),
             RadioListTile<OrganizationType>(
-              title: Text('Company'),
+              secondary: SvgPicture.asset(
+                'lib/dart_wing/gui/images/company_icon.svg',
+                alignment: Alignment.center,
+                //width: 50,
+              ),
+              title:
+                  Text(organizationInfoByType[OrganizationType.company]!.label),
               value: OrganizationType.company,
               groupValue: _selectedOrganization,
               onChanged: (OrganizationType? value) {
@@ -73,7 +82,13 @@ class _AddOrganizationPageState extends State<AddOrganizationPage> {
               },
             ),
             RadioListTile<OrganizationType>(
-              title: Text('Family'),
+              secondary: SvgPicture.asset(
+                'lib/dart_wing/gui/images/family_icon.svg',
+                alignment: Alignment.center,
+                //width: 50,
+              ),
+              title:
+                  Text(organizationInfoByType[OrganizationType.family]!.label),
               value: OrganizationType.family,
               groupValue: _selectedOrganization,
               onChanged: (OrganizationType? value) {
@@ -83,7 +98,12 @@ class _AddOrganizationPageState extends State<AddOrganizationPage> {
               },
             ),
             RadioListTile<OrganizationType>(
-              title: Text('Club'),
+              secondary: SvgPicture.asset(
+                'lib/dart_wing/gui/images/club_icon.svg',
+                alignment: Alignment.center,
+                //width: 50,
+              ),
+              title: Text(organizationInfoByType[OrganizationType.club]!.label),
               value: OrganizationType.club,
               groupValue: _selectedOrganization,
               onChanged: (OrganizationType? value) {
@@ -93,7 +113,13 @@ class _AddOrganizationPageState extends State<AddOrganizationPage> {
               },
             ),
             RadioListTile<OrganizationType>(
-              title: Text('Nonprofit'),
+              secondary: SvgPicture.asset(
+                'lib/dart_wing/gui/images/nonprofit_icon.svg',
+                alignment: Alignment.center,
+                //width: 50,
+              ),
+              title: Text(
+                  organizationInfoByType[OrganizationType.nonprofit]!.label),
               value: OrganizationType.nonprofit,
               groupValue: _selectedOrganization,
               onChanged: (OrganizationType? value) {

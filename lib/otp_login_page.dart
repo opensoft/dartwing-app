@@ -56,7 +56,7 @@ class _OtpLoginPageState extends State<OtpLoginPage> {
           children: [
             Expanded(
                 child: SvgPicture.asset(
-              'lib/dart_wing/images/email_icon.svg',
+              'lib/dart_wing/gui/images/email_icon.svg',
               alignment: Alignment.center,
               width: 250,
               height: 250,

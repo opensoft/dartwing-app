@@ -56,7 +56,7 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
           children: [
             Expanded(
                 child: SvgPicture.asset(
-              'lib/dart_wing/images/dart_wing_icon.svg',
+              'lib/dart_wing/gui/images/dart_wing_icon.svg',
               alignment: Alignment.center,
               //width: 50,
             )),

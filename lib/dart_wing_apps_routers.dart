@@ -11,7 +11,7 @@ import 'dart_wing/gui/base_apps_routers.dart';
 import 'dart_wing/network/paper_trail.dart';
 import 'home_page.dart';
 import 'login_page.dart';
-import 'organization/add_organization_page.dart';
+import 'organization/select_organization_type_page.dart';
 import 'organization/company_organization_page.dart';
 import 'organization/organizations_list_page.dart';
 import 'otp_login_page.dart';
@@ -26,7 +26,7 @@ class DartWingAppsRouters extends BaseAppsRouters {
   static const String addUserInfoPage = 'addUserInfoPage';
 
   static const String organizationsListPage = 'organizationsListPage';
-  static const String addOrganizationPage = 'addOrganizationPage';
+  static const String selectOrganizationTypePage = 'selectOrganizationTypePage';
   static const String companyOrganizationPage = 'companyOrganizationPage';
 
   @override
@@ -56,8 +56,9 @@ class DartWingAppsRouters extends BaseAppsRouters {
         return MaterialPageRoute(builder: (_) => const AddUserInfoPage());
       case organizationsListPage:
         return MaterialPageRoute(builder: (_) => const OrganizationsListPage());
-      case addOrganizationPage:
-        return MaterialPageRoute(builder: (_) => const AddOrganizationPage());
+      case selectOrganizationTypePage:
+        return MaterialPageRoute(
+            builder: (_) => const SelectOrganizationTypePage());
       case companyOrganizationPage:
         return MaterialPageRoute(
             builder: (_) => CompanyOrganizationPage(
