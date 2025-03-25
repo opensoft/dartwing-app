@@ -1,10 +1,13 @@
 import 'dart:core';
 
 import 'package:dart_wing_mobile/dart_wing/gui/gui_helper.dart';
+import 'package:dart_wing_mobile/dart_wing/network/dart_wing/data/organization.dart';
+import 'package:dart_wing_mobile/dart_wing/network/network_clients.dart';
 import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../dart_wing/gui/notification.dart';
 import '../dart_wing/gui/widgets/base_colors.dart';
 import '../dart_wing/gui/widgets/base_scaffold.dart';
 import '../dart_wing/network/dart_wing/dart_wing_api_helper.dart';
@@ -20,10 +23,10 @@ class SelectOrganizationTypePage extends StatefulWidget {
 class _SelectOrganizationTypePageState
     extends State<SelectOrganizationTypePage> {
   bool _loadingOverlayEnabled = false;
-  final TextEditingController _organizationNameController =
+  final TextEditingController _organizationDescriptionController =
       TextEditingController();
   final _focusNode = FocusNode();
-  OrganizationType? _selectedOrganization;
+  OrganizationType? _selectedOrganizationType;
 
   @override
   void initState() {
@@ -47,24 +50,6 @@ class _SelectOrganizationTypePageState
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Flexible(
-                child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: TextFormField(
-                      //keyboardType: TextInputType.emailAddress,
-                      controller: _organizationNameController,
-                      //style: const TextStyle(color: Colors.white),
-                      onChanged: (_) {
-                        setState(() {});
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Organization name",
-                        //labelStyle: const TextStyle(color: Colors.grey),
-                        hintText: "Organization name",
-                        //hintStyle: const TextStyle(color: Colors.white24),
-                        border: const OutlineInputBorder(),
-                      ),
-                    ))),
             RadioListTile<OrganizationType>(
               secondary: SvgPicture.asset(
                 'lib/dart_wing/gui/images/company_icon.svg',
@@ -74,10 +59,10 @@ class _SelectOrganizationTypePageState
               title:
                   Text(organizationInfoByType[OrganizationType.company]!.label),
               value: OrganizationType.company,
-              groupValue: _selectedOrganization,
+              groupValue: _selectedOrganizationType,
               onChanged: (OrganizationType? value) {
                 setState(() {
-                  _selectedOrganization = value;
+                  _selectedOrganizationType = value;
                 });
               },
             ),
@@ -90,10 +75,10 @@ class _SelectOrganizationTypePageState
               title:
                   Text(organizationInfoByType[OrganizationType.family]!.label),
               value: OrganizationType.family,
-              groupValue: _selectedOrganization,
+              groupValue: _selectedOrganizationType,
               onChanged: (OrganizationType? value) {
                 setState(() {
-                  _selectedOrganization = value;
+                  _selectedOrganizationType = value;
                 });
               },
             ),
@@ -105,10 +90,10 @@ class _SelectOrganizationTypePageState
               ),
               title: Text(organizationInfoByType[OrganizationType.club]!.label),
               value: OrganizationType.club,
-              groupValue: _selectedOrganization,
+              groupValue: _selectedOrganizationType,
               onChanged: (OrganizationType? value) {
                 setState(() {
-                  _selectedOrganization = value;
+                  _selectedOrganizationType = value;
                 });
               },
             ),
@@ -119,15 +104,33 @@ class _SelectOrganizationTypePageState
                 //width: 50,
               ),
               title: Text(
-                  organizationInfoByType[OrganizationType.nonprofit]!.label),
-              value: OrganizationType.nonprofit,
-              groupValue: _selectedOrganization,
+                  organizationInfoByType[OrganizationType.nonProfit]!.label),
+              value: OrganizationType.nonProfit,
+              groupValue: _selectedOrganizationType,
               onChanged: (OrganizationType? value) {
                 setState(() {
-                  _selectedOrganization = value;
+                  _selectedOrganizationType = value;
                 });
               },
             ),
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      //keyboardType: TextInputType.emailAddress,
+                      controller: _organizationDescriptionController,
+                      //style: const TextStyle(color: Colors.white),
+                      onChanged: (_) {
+                        setState(() {});
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Description",
+                        //labelStyle: const TextStyle(color: Colors.grey),
+                        hintText: "Description",
+                        //hintStyle: const TextStyle(color: Colors.white24),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ))),
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
@@ -135,29 +138,36 @@ class _SelectOrganizationTypePageState
                       backgroundColor: Colors.orange[200],
                       minimumSize: const Size.fromHeight(60),
                     ),
-                    onPressed: _organizationNameController.text.isNotEmpty &&
-                            _selectedOrganization != null
+                    onPressed: _selectedOrganizationType != null
                         ? () {
-                            if (_selectedOrganization ==
+                            if (_selectedOrganizationType ==
                                 OrganizationType.company) {
                               Navigator.of(context).pushNamed(
-                                  DartWingAppsRouters.companyOrganizationPage,
-                                  arguments: _organizationNameController.text);
-                            } else if (_selectedOrganization ==
+                                  DartWingAppsRouters
+                                      .createCompanyOrganizationPage,
+                                  arguments:
+                                      _organizationDescriptionController.text);
+                            } else if (_selectedOrganizationType ==
                                 OrganizationType.family) {
                               Navigator.of(context).pushNamed(
-                                  DartWingAppsRouters.companyOrganizationPage,
-                                  arguments: _organizationNameController.text);
-                            } else if (_selectedOrganization ==
+                                  DartWingAppsRouters
+                                      .createCompanyOrganizationPage,
+                                  arguments:
+                                      _organizationDescriptionController.text);
+                            } else if (_selectedOrganizationType ==
                                 OrganizationType.club) {
                               Navigator.of(context).pushNamed(
-                                  DartWingAppsRouters.companyOrganizationPage,
-                                  arguments: _organizationNameController.text);
-                            } else if (_selectedOrganization ==
-                                OrganizationType.nonprofit) {
+                                  DartWingAppsRouters
+                                      .createCompanyOrganizationPage,
+                                  arguments:
+                                      _organizationDescriptionController.text);
+                            } else if (_selectedOrganizationType ==
+                                OrganizationType.nonProfit) {
                               Navigator.of(context).pushNamed(
-                                  DartWingAppsRouters.companyOrganizationPage,
-                                  arguments: _organizationNameController.text);
+                                  DartWingAppsRouters
+                                      .createCompanyOrganizationPage,
+                                  arguments:
+                                      _organizationDescriptionController.text);
                             }
                           }
                         : null,

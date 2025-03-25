@@ -13,6 +13,7 @@ import 'dart_wing/core/custom_exceptions.dart';
 import 'dart_wing/core/globals.dart';
 import 'dart_wing/gui/notification.dart';
 import 'dart_wing/gui/widgets/base_scaffold.dart';
+import 'dart_wing/network/dart_wing/data/user.dart';
 import 'dart_wing/network/network_clients.dart';
 import 'dart_wing/network/paper_trail.dart';
 
@@ -25,9 +26,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   bool _loadingOverlayEnabled = false;
+  bool _isRefreshTokenStarted = false;
 
   //String _redirectUrl = "http://localhost:3000";
   String _redirectUrl = "https://app-dev.ledgerlinc.com";
+
+  Future<void> _refreshToken() {
+    return Globals.keycloakWrapper
+        .updateToken(const Duration(days: 60))
+        .then((_) {
+      _isRefreshTokenStarted = true;
+    });
+  }
 
   Future<bool> _logout() {
     if (kIsWeb) {
@@ -49,18 +59,22 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     if (!Globals.keycloakWrapper.isInitialized) {
       Globals.keycloakWrapper.initialize();
     }
-    return Globals.keycloakWrapper.login().then((success) {
-      if (!success) {
-        setState(() {
-          _loadingOverlayEnabled = false;
-        });
-      }
-      return success;
-    });
+    if (Globals.keycloakWrapper.accessToken == null) {
+      return Globals.keycloakWrapper.login().then((success) {
+        if (!success) {
+          setState(() {
+            _loadingOverlayEnabled = false;
+          });
+        }
+        return success;
+      });
+    } else {
+      return _updateTokenAndUserInfo();
+    }
   }
 
-  void _goToHomePage() {
-    Navigator.of(context)
+  Future<bool> _goToHomePage() {
+    return Navigator.of(context)
         .pushNamed(DartWingAppsRouters.homePage, arguments: "")
         .then((value) {
       return _logout();
@@ -68,11 +82,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       setState(() {
         _loadingOverlayEnabled = false;
       });
+      return true;
     }).catchError((e) {
       setState(() {
         _loadingOverlayEnabled = false;
       });
       showWarningNotification(context, e.toString());
+      return false;
     });
   }
 
@@ -94,7 +110,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _updateTokenAndUserInfo() {
+  Future<bool> _updateTokenAndUserInfo() {
     setState(() {
       _loadingOverlayEnabled = true;
     });
@@ -122,9 +138,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           "Token ${Globals.keycloakWrapper.accessToken.toString()}");
       PaperTrailClient.sendInfoMessageToPaperTrail(
           "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(Globals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}");
-      return NetworkClients.dartWingApi.fetchUser().catchError((e) {
-        return Navigator.of(context).pushNamed(DartWingAppsRouters.homePage);
-      });
+      return NetworkClients.dartWingApi.fetchUser();
 
       Navigator.of(context)
           .pushNamed(DartWingAppsRouters.addUserInfoPage)
@@ -136,18 +150,21 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               arguments: "Some organization");
         }
       });
+    }).catchError((e) {
+      return Navigator.of(context)
+          .pushNamed(DartWingAppsRouters.addUserInfoPage)
+          .then((result) {
+        return result == null ? Globals.user : result as User;
+      });
     }).then((user) {
-      setState(() {
-        _loadingOverlayEnabled = false;
-      });
       Globals.user = user;
-    }).then((_) {
       setState(() {
         _loadingOverlayEnabled = false;
       });
-      if (ModalRoute.of(context)!.isCurrent) {
+      if (ModalRoute.of(context)!.isCurrent && user.email.isNotEmpty) {
         _goToHomePage();
       }
+      return true;
     }).catchError((e) {
       //_logout();
       setState(() {
@@ -159,6 +176,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (ModalRoute.of(context)!.isCurrent) {
         setState(() {});
       }
+      return false;
     });
   }
 
@@ -180,7 +198,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           Globals.keycloakWrapper.accessToken!.isEmpty) {
         return;
       }
-      _updateTokenAndUserInfo();
+      if (_isRefreshTokenStarted) {
+        _updateTokenAndUserInfo();
+        _isRefreshTokenStarted = false;
+      } else {
+        _refreshToken();
+      }
     });
     Globals.keycloakWrapper.onError = (message, error, stackTrace) {
       PaperTrailClient.sendWarningMessageToPaperTrail(message);

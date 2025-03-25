@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:dart_wing_mobile/dart_wing/gui/notification.dart';
 import 'package:dart_wing_mobile/dart_wing/network/network_clients.dart';
 import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:email_validator/email_validator.dart';
@@ -157,6 +158,13 @@ class _AddUserInfoPageState extends State<AddUserInfoPage> {
                                 .createUser(user)
                                 .then((user) {
                               Navigator.of(context).pop(user);
+                            }).catchError((e) {
+                              setState(() {
+                                _loadingOverlayEnabled = false;
+                              });
+                              Navigator.of(context)
+                                  .pop(user); // TODO: remove it
+                              showWarningNotification(context, e.toString());
                             });
                           }
                         : null,

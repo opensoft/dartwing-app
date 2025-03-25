@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dart_wing_mobile/add_user_info_page.dart';
+import 'package:dart_wing_mobile/dart_wing/gui/data/organization_info.dart';
+import 'package:dart_wing_mobile/dart_wing/network/dart_wing/dart_wing_api_helper.dart';
 import 'package:dart_wing_mobile/login_with_email_page.dart';
 import 'package:dart_wing_mobile/personal_info_page.dart';
 import 'package:flutter/foundation.dart';
@@ -11,8 +13,9 @@ import 'dart_wing/gui/base_apps_routers.dart';
 import 'dart_wing/network/paper_trail.dart';
 import 'home_page.dart';
 import 'login_page.dart';
+import 'organization/company_info_page.dart';
 import 'organization/select_organization_type_page.dart';
-import 'organization/company_organization_page.dart';
+import 'organization/create_company_organization_page.dart';
 import 'organization/organizations_list_page.dart';
 import 'otp_login_page.dart';
 
@@ -27,7 +30,9 @@ class DartWingAppsRouters extends BaseAppsRouters {
 
   static const String organizationsListPage = 'organizationsListPage';
   static const String selectOrganizationTypePage = 'selectOrganizationTypePage';
-  static const String companyOrganizationPage = 'companyOrganizationPage';
+  static const String createCompanyOrganizationPage =
+      'createCompanyOrganizationPage';
+  static const String companyInfoPage = "companyInfoPage";
 
   @override
   static Future<dynamic> showScannerPage(BuildContext context, String pageTitle,
@@ -59,10 +64,15 @@ class DartWingAppsRouters extends BaseAppsRouters {
       case selectOrganizationTypePage:
         return MaterialPageRoute(
             builder: (_) => const SelectOrganizationTypePage());
-      case companyOrganizationPage:
+      case createCompanyOrganizationPage:
         return MaterialPageRoute(
-            builder: (_) => CompanyOrganizationPage(
-                  organizationName: settings.arguments.toString(),
+            builder: (_) => CreateCompanyOrganizationPage(
+                  descriptionOfOrganization: settings.arguments.toString(),
+                ));
+      case companyInfoPage:
+        return MaterialPageRoute(
+            builder: (_) => CompanyInfoPage(
+                  companyName: settings.arguments.toString(),
                 ));
       default:
         return super.generateRouters(settings);
