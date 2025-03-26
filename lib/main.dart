@@ -42,7 +42,7 @@ void main() async {
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     //NetworkClients.appSettings.defaultLocation = 'SGX';
     Globals.applicationInfo.version = packageInfo.version;
-    NetworkClients.qaModeEnabled = false;
+    NetworkClients.qaModeEnabled = true;
 
     return PersistentStorage.getAppId();
   }).then((appId) {

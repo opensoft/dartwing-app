@@ -1,6 +1,5 @@
 import 'dart:core';
 
-import 'package:dart_wing_mobile/dart_wing/network/dart_wing/data/organization.dart';
 import 'package:flutter/material.dart';
 
 import '../dart_wing/gui/notification.dart';
@@ -9,26 +8,29 @@ import '../dart_wing/gui/widgets/base_scaffold.dart';
 import '../dart_wing/network/network_clients.dart';
 import '../dart_wing_apps_routers.dart';
 
-class OrganizationsListPage extends StatefulWidget {
-  const OrganizationsListPage({super.key});
+class DocumentRepositoryPage extends StatefulWidget {
+  const DocumentRepositoryPage({super.key, required this.companyName});
+  final String companyName;
 
   @override
-  _OrganizationsListPageState createState() => _OrganizationsListPageState();
+  _DocumentRepositoryPageState createState() => _DocumentRepositoryPageState();
 }
 
-class _OrganizationsListPageState extends State<OrganizationsListPage> {
+class _DocumentRepositoryPageState extends State<DocumentRepositoryPage> {
   bool _loadingOverlayEnabled = false;
   final _focusNode = FocusNode();
 
-  List<String> _organizations = [];
+  List<String> _documentRepositoryList = [];
 
-  void _fetchOrganizations() {
+  void _fetchDocumentRepositoryList() {
     setState(() {
       _loadingOverlayEnabled = true;
     });
-    NetworkClients.dartWingApi.fetchOrganizations().then((organizations) {
+    NetworkClients.dartWingApi
+        .fetchOrganizations()
+        .then((documentRepositoryList) {
       setState(() {
-        _organizations = organizations;
+        _documentRepositoryList = documentRepositoryList;
         _loadingOverlayEnabled = false;
       });
     }).catchError((e) {
@@ -41,10 +43,8 @@ class _OrganizationsListPageState extends State<OrganizationsListPage> {
 
   @override
   void initState() {
-    _fetchOrganizations();
+    //_fetchDocumentRepositoryList();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => FocusScope.of(context).requestFocus(_focusNode));
   }
 
   @override
@@ -54,12 +54,12 @@ class _OrganizationsListPageState extends State<OrganizationsListPage> {
       appBar: AppBar(
         backgroundColor: BaseColors.lightBackgroundColor,
         title: Row(children: [
-          Expanded(child: Text("Organizations", textAlign: TextAlign.center)),
+          Expanded(
+              child: Text("Document Repository", textAlign: TextAlign.center)),
           InkWell(
             borderRadius: BorderRadius.circular(15),
             onTap: () {
-              Navigator.of(context)
-                  .pushNamed(DartWingAppsRouters.selectOrganizationTypePage);
+              Navigator.of(context).pushNamed(DartWingAppsRouters.chooseDocumentRepositoryPage, arguments: widget.companyName);
             },
             child: Container(
                 decoration: BoxDecoration(
@@ -82,8 +82,8 @@ class _OrganizationsListPageState extends State<OrganizationsListPage> {
             Expanded(
               child: ListView.separated(
                   shrinkWrap: true,
-                  padding: const EdgeInsets.only(top: 20, bottom: 20),
-                  itemCount: _organizations.length,
+                  padding: const EdgeInsets.all(20),
+                  itemCount: _documentRepositoryList.length,
                   separatorBuilder: (context, index) => const Divider(
                         indent: 8,
                         color: Colors.grey,
@@ -97,23 +97,16 @@ class _OrganizationsListPageState extends State<OrganizationsListPage> {
                               8), // Optional rounded corners
                         ),
                         child: InkWell(
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(
-                                      DartWingAppsRouters.companyInfoPage,
-                                      arguments: _organizations[i])
-                                  .then((_) {
-                                _fetchOrganizations();
-                              });
-                            },
+                            onTap: () {},
                             child: Padding(
-                                padding: const EdgeInsets.all(20),
+                                padding:
+                                    const EdgeInsets.only(top: 20, bottom: 20),
                                 child: Row(children: [
                                   Expanded(
                                       child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      _organizations[i],
+                                      "Link to document repository",
                                       style: const TextStyle(fontSize: 19),
                                     ),
                                   )),

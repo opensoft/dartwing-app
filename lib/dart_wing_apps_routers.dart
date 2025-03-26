@@ -4,6 +4,7 @@ import 'package:dart_wing_mobile/add_user_info_page.dart';
 import 'package:dart_wing_mobile/dart_wing/gui/data/organization_info.dart';
 import 'package:dart_wing_mobile/dart_wing/network/dart_wing/dart_wing_api_helper.dart';
 import 'package:dart_wing_mobile/login_with_email_page.dart';
+import 'package:dart_wing_mobile/organization/document_repository_page.dart';
 import 'package:dart_wing_mobile/personal_info_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'dart_wing/gui/base_apps_routers.dart';
 import 'dart_wing/network/paper_trail.dart';
 import 'home_page.dart';
 import 'login_page.dart';
+import 'organization/choose_document_repository_page.dart';
 import 'organization/company_info_page.dart';
 import 'organization/select_organization_type_page.dart';
 import 'organization/create_company_organization_page.dart';
@@ -33,6 +35,9 @@ class DartWingAppsRouters extends BaseAppsRouters {
   static const String createCompanyOrganizationPage =
       'createCompanyOrganizationPage';
   static const String companyInfoPage = "companyInfoPage";
+  static const String documentRepositoryPage = "documentRepositoryPage";
+  static const String chooseDocumentRepositoryPage =
+      "chooseDocumentRepositoryPage";
 
   @override
   static Future<dynamic> showScannerPage(BuildContext context, String pageTitle,
@@ -74,6 +79,14 @@ class DartWingAppsRouters extends BaseAppsRouters {
             builder: (_) => CompanyInfoPage(
                   companyName: settings.arguments.toString(),
                 ));
+      case documentRepositoryPage:
+        return MaterialPageRoute(
+            builder: (_) => DocumentRepositoryPage(
+                companyName: settings.arguments.toString()));
+      case chooseDocumentRepositoryPage:
+        return MaterialPageRoute(
+            builder: (_) => ChooseDocumentRepositoryPage(
+                companyName: settings.arguments.toString()));
       default:
         return super.generateRouters(settings);
     }
