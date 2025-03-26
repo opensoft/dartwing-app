@@ -21,7 +21,7 @@ stages:
 
     steps:
     - checkout: dartwing
-      path: s/lib/dartwing_flutter_common
+      path: s/lib/dart_wing
     - checkout: self
       submodules: recursive
       path: s
@@ -118,7 +118,7 @@ stages:
 
     steps:
     - checkout: dartwing
-      path: s/lib/dartwing_flutter_common
+      path: s/lib/dart_wing
     - checkout: self
       submodules: recursive
       path: s
