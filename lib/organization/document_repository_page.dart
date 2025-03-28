@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:dart_wing_mobile/dart_wing/network/dart_wing/data/organization.dart';
 import 'package:flutter/material.dart';
 
 import '../dart_wing/gui/notification.dart';
@@ -20,17 +21,22 @@ class _DocumentRepositoryPageState extends State<DocumentRepositoryPage> {
   bool _loadingOverlayEnabled = false;
   final _focusNode = FocusNode();
 
-  List<String> _documentRepositoryList = [];
+  Organization _company = Organization();
+  final TextEditingController _folderPathController = TextEditingController();
 
-  void _fetchDocumentRepositoryList() {
+  void _fetchOrganization() {
     setState(() {
       _loadingOverlayEnabled = true;
     });
     NetworkClients.dartWingApi
-        .fetchOrganizations()
-        .then((documentRepositoryList) {
+        .fetchOrganization(widget.companyName)
+        .then((company) {
       setState(() {
-        _documentRepositoryList = documentRepositoryList;
+        _company = company;
+        _folderPathController.text =
+            company.microsoftSharepointFolderPath == null
+                ? ""
+                : company.microsoftSharepointFolderPath.toString();
         _loadingOverlayEnabled = false;
       });
     }).catchError((e) {
@@ -43,7 +49,7 @@ class _DocumentRepositoryPageState extends State<DocumentRepositoryPage> {
 
   @override
   void initState() {
-    //_fetchDocumentRepositoryList();
+    _fetchOrganization();
     super.initState();
   }
 
@@ -59,7 +65,12 @@ class _DocumentRepositoryPageState extends State<DocumentRepositoryPage> {
           InkWell(
             borderRadius: BorderRadius.circular(15),
             onTap: () {
-              Navigator.of(context).pushNamed(DartWingAppsRouters.chooseDocumentRepositoryPage, arguments: widget.companyName);
+              Navigator.of(context)
+                  .pushNamed(DartWingAppsRouters.chooseDocumentRepositoryPage,
+                      arguments: widget.companyName)
+                  .then((_) {
+                _fetchOrganization();
+              });
             },
             child: Container(
                 decoration: BoxDecoration(
@@ -69,54 +80,37 @@ class _DocumentRepositoryPageState extends State<DocumentRepositoryPage> {
                 child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Text(
-                      "Add",
+                      "Select",
                       style: TextStyle(fontSize: 16),
                     ))),
           )
         ]),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(20),
-                  itemCount: _documentRepositoryList.length,
-                  separatorBuilder: (context, index) => const Divider(
-                        indent: 8,
-                        color: Colors.grey,
-                      ),
-                  itemBuilder: (BuildContext context, int i) {
-                    return Container(
-                        height: 80,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1),
-                          borderRadius: BorderRadius.circular(
-                              8), // Optional rounded corners
-                        ),
-                        child: InkWell(
-                            onTap: () {},
-                            child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 20, bottom: 20),
-                                child: Row(children: [
-                                  Expanded(
-                                      child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "Link to document repository",
-                                      style: const TextStyle(fontSize: 19),
-                                    ),
-                                  )),
-                                  Icon(Icons.navigate_next)
-                                ]))));
-                  }),
-            ),
-          ],
-        ),
-      ),
+          padding: const EdgeInsets.all(10),
+          child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextFormField(
+                  readOnly: true,
+                  //keyboardType: TextInputType.emailAddress,
+                  controller: _folderPathController,
+                  //style: const TextStyle(color: Colors.white),
+                  onChanged: (_) {
+                    setState(() {});
+                  },
+                  style: const TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    labelText: _folderPathController.text.isEmpty
+                        ? "Please select folder"
+                        : "Folder Path",
+                    //labelStyle: const TextStyle(color: Colors.grey),
+                    hintText: "Please select folder",
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: const OutlineInputBorder(),
+                  ),
+                )),
+          ])),
     );
   }
 }

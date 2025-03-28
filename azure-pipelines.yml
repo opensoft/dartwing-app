@@ -78,6 +78,7 @@ stages:
         bundleFile: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         track: 'internal'
         #isDraftRelease: true
+        changesNotSentForReview: true
         releaseName: '$(Build.BuildID)'
       continueOnError: true
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
@@ -91,6 +92,7 @@ stages:
         bundleFile: '$(Build.Repository.LocalPath)/build/app/outputs/bundle/release/app-release.aab'
         track: 'production'
         releaseName: '$(Build.BuildID)'
+        changesNotSentForReview: true
       continueOnError: true
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       displayName: "Google Release to Production"

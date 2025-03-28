@@ -30,6 +30,31 @@ class _CreateCompanyOrganizationPageState
   final _focusNode = FocusNode();
   Organization _organization = Organization();
 
+  void _createCompany() {
+    _organization.name = _organizationNameController.text;
+    _organization.abbreviation = _organizationAbbrController.text;
+    _organization.country = "United States";
+    _organization.currency = "USD";
+    _organization.companyType = OrganizationType.company;
+    setState(() {
+      _loadingOverlayEnabled = true;
+    });
+    NetworkClients.dartWingApi
+        .createOrganization(_organization)
+        .then((company) {
+      setState(() {
+        _loadingOverlayEnabled = false;
+      });
+      Navigator.of(context).pushNamed(DartWingAppsRouters.companyInfoPage,
+          arguments: company.name);
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlayEnabled = false;
+      });
+      showWarningNotification(context, e.toString());
+    });
+  }
+
   @override
   void initState() {
     _organization.companyType = OrganizationType.company;
@@ -101,30 +126,7 @@ class _CreateCompanyOrganizationPageState
                     onPressed: _organizationNameController.text.isNotEmpty &&
                             _organizationAbbrController.text.isNotEmpty
                         ? () {
-                            _organization.name =
-                                _organizationNameController.text;
-                            _organization.abbreviation =
-                                _organizationAbbrController.text;
-                            _organization.country = "United States";
-                            _organization.currency = "USD";
-                            _organization.companyType =
-                                OrganizationType.company;
-                            setState(() {
-                              _loadingOverlayEnabled = true;
-                            });
-                            NetworkClients.dartWingApi
-                                .createOrganization(_organization)
-                                .then((company) {
-                              setState(() {
-                                _loadingOverlayEnabled = false;
-                              });
-                              //Navigator.of(context).pushNamed(DartWingAppsRouters.company)
-                            }).catchError((e) {
-                              setState(() {
-                                _loadingOverlayEnabled = false;
-                              });
-                              showWarningNotification(context, e.toString());
-                            });
+                            _createCompany();
                           }
                         : null,
                     child: Row(children: [
