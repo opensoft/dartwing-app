@@ -1,3 +1,4 @@
+import 'package:dart_wing_mobile/document_picker_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -76,7 +77,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _scannerTab() {
-    return _baseTab();
+    return DocumentPickerPage();
   }
 
   Widget _settingsTab() {

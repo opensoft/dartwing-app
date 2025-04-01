@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_wing_mobile/add_user_info_page.dart';
 import 'package:dart_wing_mobile/dart_wing/gui/data/organization_info.dart';
 import 'package:dart_wing_mobile/dart_wing/network/dart_wing/dart_wing_api_helper.dart';
+import 'package:dart_wing_mobile/document_picker_page.dart';
 import 'package:dart_wing_mobile/login_with_email_page.dart';
 import 'package:dart_wing_mobile/organization/document_repository_page.dart';
 import 'package:dart_wing_mobile/personal_info_page.dart';
@@ -38,6 +39,7 @@ class DartWingAppsRouters extends BaseAppsRouters {
   static const String documentRepositoryPage = "documentRepositoryPage";
   static const String chooseDocumentRepositoryPage =
       "chooseDocumentRepositoryPage";
+  static const String documentPickerPage = "documentPickerPage";
 
   @override
   static Future<dynamic> showScannerPage(BuildContext context, String pageTitle,
@@ -87,6 +89,8 @@ class DartWingAppsRouters extends BaseAppsRouters {
         return MaterialPageRoute(
             builder: (_) => ChooseDocumentRepositoryPage(
                 companyName: settings.arguments.toString()));
+      case documentPickerPage:
+        return MaterialPageRoute(builder: (_) => const DocumentPickerPage());
       default:
         return super.generateRouters(settings);
     }

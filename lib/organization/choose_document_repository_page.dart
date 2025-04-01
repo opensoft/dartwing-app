@@ -51,32 +51,22 @@ class _ChooseDocumentRepositoryPageState
       _selectedFolderPath = "${currentFolder.name}/$_selectedFolderPath";
     }
 
-    return Dialogs.showInfoDialog(
-            context, "Do you want to select\n$_selectedFolderPath ?",
-            titleText: "Select folder",
-            okButtonText: "Select",
-            cancelButtonText: "Cancel")
-        .then((result) {
-      if (result == null) {
-        return;
-      }
+    setState(() {
+      _loadingOverlayEnabled = true;
+    });
+    return NetworkClients.dartWingApi
+        .saveFolderPath(_currentProvider.alias.toString(), _selectedFolderPath,
+            widget.companyName)
+        .then((_) {
       setState(() {
-        _loadingOverlayEnabled = true;
+        _loadingOverlayEnabled = false;
       });
-      NetworkClients.dartWingApi
-          .saveFolderPath(_currentProvider.alias.toString(),
-              _selectedFolderPath, widget.companyName)
-          .then((_) {
-        setState(() {
-          _loadingOverlayEnabled = false;
-        });
-        Navigator.of(context).pop();
-      }).catchError((e) {
-        setState(() {
-          _loadingOverlayEnabled = false;
-        });
-        showWarningNotification(context, e.toString());
+      Navigator.of(context).pop();
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlayEnabled = false;
       });
+      showWarningNotification(context, e.toString());
     });
   }
 
