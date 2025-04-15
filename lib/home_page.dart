@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:upgrader/upgrader.dart';
 
+import 'dart_wing/gui/base_apps_routers.dart';
 import 'dart_wing/gui/dialogs.dart';
 import 'dart_wing/gui/widgets/base_colors.dart';
 import 'dart_wing/gui/widgets/base_scaffold.dart';
@@ -118,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                 label: 'Organizations',
                 onTap: () {
                   Navigator.of(context)
-                      .pushNamed(DartWingAppsRouters.organizationsListPage);
+                      .pushNamed(BaseAppsRouters.organizationsListPage);
                 }),
           ],
           onBarcodeFetched: (barcode) {},
