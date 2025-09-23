@@ -1,0 +1,92 @@
+{
+  "name": "DartWing Flutter Frontend Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "USER_UID": "1000",
+      "USER_GID": "1000",
+      "USERNAME": "brett"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dart-code.dart-code",
+        "dart-code.flutter",
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "ms-vscode.theme-tomorrowkit",
+        "PKief.material-icon-theme",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "ms-azure-devops.azure-pipelines",
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "localizely.flutter-intl",
+        "Nash.awesome-flutter-snippets",
+        "humao.rest-client",
+        "ryanluker.vscode-coverage-gutters",
+        "aaron-bond.better-comments",
+        "mhutchie.git-graph",
+        "github.vscode-pull-request-github",
+        "vscode-icons-team.vscode-icons",
+        "alexisvt.flutter-snippets",
+        "robertbrunhage.flutter-riverpod-snippets",
+        "felix.flutter-color",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint"
+      ],
+      "settings": {
+        "dart.flutterSdkPath": "/opt/flutter",
+        "dart.sdkPath": "/opt/flutter/bin/cache/dart-sdk",
+        "dart.debugExternalPackageLibraries": true,
+        "dart.debugSdkLibraries": false,
+        "dart.lineLength": 120,
+        "editor.rulers": [
+          120
+        ],
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit",
+          "source.fixAll": "explicit"
+        },
+        "files.associations": {
+          "*.dart": "dart"
+        },
+        "search.exclude": {
+          "**/build/**": true,
+          "**/.dart_tool/**": true,
+          "**/ios/build/**": true,
+          "**/android/build/**": true,
+          "**/web/build/**": true
+        },
+        "files.exclude": {
+          "**/.dart_tool": true,
+          "**/build": true
+        },
+        "dart.insertArgumentPlaceholders": false,
+        "dart.completeFunctionCalls": true,
+        "dart.showTodos": true,
+        "dart.enableSnippets": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false
+      }
+    }
+  },
+  "forwardPorts": [
+    3000,
+    8080,
+    8000
+  ],
+  "postCreateCommand": "flutter doctor -v && flutter pub get",
+  "remoteUser": "brett",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace"
+}

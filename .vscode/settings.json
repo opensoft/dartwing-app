@@ -1,0 +1,35 @@
+{
+  "dart.flutterSdkPath": "/opt/flutter",
+  "dart.debugExternalPackageLibraries": true,
+  "dart.debugSdkLibraries": false,
+  "dart.previewLsp": true,
+  "dart.lineLength": 120,
+  "editor.rulers": [120],
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "files.associations": {
+    "*.dart": "dart"
+  },
+  "search.exclude": {
+    "**/build/**": true,
+    "**/.dart_tool/**": true,
+    "**/ios/build/**": true,
+    "**/android/build/**": true,
+    "**/web/build/**": true
+  },
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true
+  },
+  "dart.insertArgumentPlaceholders": false,
+  "dart.completeFunctionCalls": true,
+  "dart.showTodos": true,
+  "dart.enableSnippets": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
+}
