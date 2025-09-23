@@ -16,6 +16,7 @@ import 'dart_wing/gui/widgets/base_scaffold.dart';
 import 'dart_wing/network/dart_wing/data/user.dart';
 import 'dart_wing/network/network_clients.dart';
 import 'dart_wing/network/paper_trail.dart';
+import 'dart_wing_mobile_global.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -32,19 +33,19 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   String _redirectUrl = "https://app-dev.ledgerlinc.com";
 
   Future<void> _refreshToken() {
-    return Globals.keycloakWrapper
-        .updateToken(const Duration(days: 60))
+    return DartWingAppGlobals.keycloakWrapper
+        .exchangeTokens(const Duration(days: 60))
         .then((_) {
-      _isRefreshTokenStarted = true;
-    });
+          _isRefreshTokenStarted = true;
+        });
   }
 
   Future<bool> _logout() {
     if (kIsWeb) {
       return Future.value(false); // TODO: ADDWEB
     }
-    return Globals.keycloakWrapper.logout().then((success) {
-      Globals.keycloakWrapper.tokenResponse = null;
+    return DartWingAppGlobals.keycloakWrapper.logout().then((success) {
+      DartWingAppGlobals.keycloakWrapper.tokenResponse = null;
       return success;
     });
   }
@@ -56,11 +57,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     setState(() {
       _loadingOverlayEnabled = true;
     });
-    if (!Globals.keycloakWrapper.isInitialized) {
-      Globals.keycloakWrapper.initialize();
+    if (!DartWingAppGlobals.keycloakWrapper.isInitialized) {
+      DartWingAppGlobals.keycloakWrapper.initialize();
     }
-    if (Globals.keycloakWrapper.accessToken == null) {
-      return Globals.keycloakWrapper.login().then((success) {
+    if (DartWingAppGlobals.keycloakWrapper.accessToken == null) {
+      return DartWingAppGlobals.keycloakWrapper.login().then((success) {
         if (!success) {
           setState(() {
             _loadingOverlayEnabled = false;
@@ -77,19 +78,21 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     return Navigator.of(context)
         .pushNamed(DartWingAppsRouters.homePage, arguments: "")
         .then((value) {
-      return _logout();
-    }).then((_) {
-      setState(() {
-        _loadingOverlayEnabled = false;
-      });
-      return true;
-    }).catchError((e) {
-      setState(() {
-        _loadingOverlayEnabled = false;
-      });
-      showWarningNotification(context, e.toString());
-      return false;
-    });
+          return _logout();
+        })
+        .then((_) {
+          setState(() {
+            _loadingOverlayEnabled = false;
+          });
+          return true;
+        })
+        .catchError((e) {
+          setState(() {
+            _loadingOverlayEnabled = false;
+          });
+          showWarningNotification(context, e.toString());
+          return false;
+        });
   }
 
   void _autologinIfPossible() {
@@ -99,9 +102,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     Future<bool> future = Future<bool>.value(false);
     if (kIsWeb) {
     } else {
-      future = Future.value(Globals.keycloakWrapper.accessToken == null
-          ? false
-          : Globals.keycloakWrapper.accessToken!.isNotEmpty);
+      future = Future.value(
+        DartWingAppGlobals.keycloakWrapper.accessToken == null
+            ? false
+            : DartWingAppGlobals.keycloakWrapper.accessToken!.isNotEmpty,
+      );
     }
     future.then((valid) {
       if (valid) {
@@ -114,88 +119,102 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     setState(() {
       _loadingOverlayEnabled = true;
     });
-    return Globals.keycloakWrapper.getUserInfo().then((userInfo) {
-      Globals.applicationInfo.username =
-          userInfo != null && userInfo.containsKey('name')
+    return DartWingAppGlobals.keycloakWrapper
+        .getUserInfo()
+        .then((userInfo) {
+          Globals.applicationInfo.username =
+              userInfo != null && userInfo.containsKey('name')
               ? userInfo['name']
               : '';
-      Globals.applicationInfo.userEmail =
-          userInfo != null && userInfo.containsKey('email')
+          Globals.applicationInfo.userEmail =
+              userInfo != null && userInfo.containsKey('email')
               ? userInfo['email']
               : '';
 
-      String userId = Globals.applicationInfo.userEmail;
-      if (userId.isEmpty && Globals.applicationInfo.username.isNotEmpty) {
-        userId =
-            Globals.applicationInfo.username.replaceAll(' ', '.').toLowerCase();
-      }
-      Globals.applicationInfo.deviceId =
-          "${kIsWeb ? "web" : Platform.operatingSystem.toLowerCase()}-$userId";
-    }).then((_) {
-      return NetworkClients.init(token: Globals.keycloakWrapper.accessToken);
-    }).then((_) {
-      PaperTrailClient.sendInfoMessageToPaperTrail(
-          "Token ${Globals.keycloakWrapper.accessToken.toString()}");
-      PaperTrailClient.sendInfoMessageToPaperTrail(
-          "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(Globals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}");
-      return NetworkClients.dartWingApi.fetchUser();
+          String userId = Globals.applicationInfo.userEmail;
+          if (userId.isEmpty && Globals.applicationInfo.username.isNotEmpty) {
+            userId = Globals.applicationInfo.username
+                .replaceAll(' ', '.')
+                .toLowerCase();
+          }
+          Globals.applicationInfo.deviceId =
+              "${kIsWeb ? "web" : Platform.operatingSystem.toLowerCase()}-$userId";
+        })
+        .then((_) {
+          return NetworkClients.init(
+            token: DartWingAppGlobals.keycloakWrapper.accessToken,
+          );
+        })
+        .then((_) {
+          PaperTrailClient.sendInfoMessageToPaperTrail(
+            "Token ${DartWingAppGlobals.keycloakWrapper.accessToken.toString()}",
+          );
+          PaperTrailClient.sendInfoMessageToPaperTrail(
+            "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(DartWingAppGlobals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}",
+          );
+          return NetworkClients.dartWingApi.fetchUser();
 
-      Navigator.of(context)
-          .pushNamed(DartWingAppsRouters.addUserInfoPage)
-          .then((result) {
-        if (result == null) {
-          return _logout();
-        } else {
-          return Navigator.of(context).pushNamed(DartWingAppsRouters.homePage,
-              arguments: "Some organization");
-        }
-      });
-    }).catchError((e) {
-      return Navigator.of(context)
-          .pushNamed(DartWingAppsRouters.addUserInfoPage)
-          .then((result) {
-        return result == null ? Globals.user : result as User;
-      });
-    }).then((user) {
-      Globals.user = user;
-      setState(() {
-        _loadingOverlayEnabled = false;
-      });
-      if (ModalRoute.of(context)!.isCurrent && user.email.isNotEmpty) {
-        _goToHomePage();
-      }
-      return true;
-    }).catchError((e) {
-      //_logout();
-      setState(() {
-        _loadingOverlayEnabled = false;
-      });
-      if ((e is! CancelLoginException) && (e is! PlatformException)) {
-        showWarningNotification(context, e.toString());
-      }
-      if (ModalRoute.of(context)!.isCurrent) {
-        setState(() {});
-      }
-      return false;
-    });
+          Navigator.of(
+            context,
+          ).pushNamed(DartWingAppsRouters.addUserInfoPage).then((result) {
+            if (result == null) {
+              return _logout();
+            } else {
+              return Navigator.of(context).pushNamed(
+                DartWingAppsRouters.homePage,
+                arguments: "Some organization",
+              );
+            }
+          });
+        })
+        .catchError((e) {
+          return Navigator.of(
+            context,
+          ).pushNamed(DartWingAppsRouters.addUserInfoPage).then((result) {
+            return result == null ? Globals.user : result as User;
+          });
+        })
+        .then((user) {
+          Globals.user = user;
+          setState(() {
+            _loadingOverlayEnabled = false;
+          });
+          if (ModalRoute.of(context)!.isCurrent && user.email.isNotEmpty) {
+            _goToHomePage();
+          }
+          return true;
+        })
+        .catchError((e) {
+          //_logout();
+          setState(() {
+            _loadingOverlayEnabled = false;
+          });
+          if ((e is! CancelLoginException) && (e is! PlatformException)) {
+            showWarningNotification(context, e.toString());
+          }
+          if (ModalRoute.of(context)!.isCurrent) {
+            setState(() {});
+          }
+          return false;
+        });
   }
 
   @override
   void initState() {
-    if (!Globals.keycloakWrapper.isInitialized) {
-      Globals.keycloakWrapper.initialize();
+    if (!DartWingAppGlobals.keycloakWrapper.isInitialized) {
+      DartWingAppGlobals.keycloakWrapper.initialize();
     }
-    NetworkClients.init(token: Globals.keycloakWrapper.accessToken);
+    NetworkClients.init(token: DartWingAppGlobals.keycloakWrapper.accessToken);
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       //_autologinIfPossible();
     });
 
-    Globals.keycloakWrapper.authenticationStream.listen((success) {
+    DartWingAppGlobals.keycloakWrapper.authenticationStream.listen((success) {
       if (!success ||
-          Globals.keycloakWrapper.accessToken == null ||
-          Globals.keycloakWrapper.accessToken!.isEmpty) {
+          DartWingAppGlobals.keycloakWrapper.accessToken == null ||
+          DartWingAppGlobals.keycloakWrapper.accessToken!.isEmpty) {
         return;
       }
       if (_isRefreshTokenStarted) {
@@ -205,7 +224,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         _refreshToken();
       }
     });
-    Globals.keycloakWrapper.onError = (message, error, stackTrace) {
+    DartWingAppGlobals.keycloakWrapper.onError = (message, error, stackTrace) {
       PaperTrailClient.sendWarningMessageToPaperTrail(message);
       setState(() {
         _loadingOverlayEnabled = false;
@@ -234,20 +253,19 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
             Visibility(
               visible: Globals.qaModeEnabled,
               child: const SizedBox(
-                  child: Text(
-                'QA',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.red,
+                child: Text(
+                  'QA',
+                  style: TextStyle(fontSize: 30, color: Colors.red),
                 ),
-              )),
+              ),
             ),
             Expanded(
-                child: SvgPicture.asset(
-              'lib/dart_wing/gui/images/dart_wing_icon.svg',
-              alignment: Alignment.center,
-              //width: 50,
-            )),
+              child: SvgPicture.asset(
+                'lib/dart_wing/gui/images/dart_wing_icon.svg',
+                alignment: Alignment.center,
+                //width: 50,
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(10),
               child: ElevatedButton(
@@ -258,10 +276,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                 onPressed: () {
                   _login();
                 },
-                child: const Text(
-                  "Login",
-                  style: TextStyle(fontSize: 18),
-                ),
+                child: const Text("Login", style: TextStyle(fontSize: 18)),
               ),
             ),
             Padding(
