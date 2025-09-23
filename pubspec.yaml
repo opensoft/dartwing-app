@@ -50,4 +50,3 @@ flutter:
   assets:
     - lib/dart_wing/gui/images/
     - lib/dart_wing/localization/
-    - lib/tensorflow/models/
