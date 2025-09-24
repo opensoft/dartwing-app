@@ -1,6 +1,10 @@
 # Windows 11 Setup Guide for Hybrid Flutter Development
 
-This guide helps you set up a fresh Windows 11 machine to work with the containerized Flutter development environment that connects to Windows host emulators.
+```
+
+### 5. **Install VS Code** 💻et environment variables (add to system PATH)
+$env:ANDROID_HOME = "C:\Program Files\Android"
+$env:PATH += ";C:\Program Files\Android\cmdline-tools\latest\bin;C:\Program Files\Android\platform-tools;C:\Program Files\Android\emulator"elps you set up a fresh Windows 11 machine to work with the containerized Flutter development environment that connects to Windows host emulators.
 
 ## 🎯 **Overview**
 
@@ -32,38 +36,51 @@ wsl --install
 
 ```powershell
 # Create Android SDK directory
-mkdir C:\Android\Sdk
-cd C:\Android\Sdk
+mkdir "C:\Program Files\Android"
+cd "C:\Program Files\Android"
 
 # Download command line tools
 # Visit: https://developer.android.com/studio#command-tools
 # Download commandlinetools-win-*_latest.zip
 
-# Extract to C:\Android\Sdk\cmdline-tools\latest\
+# Extract to C:\Program Files\Android\cmdline-tools\latest\
 ```
 
-**Directory structure should be:**
+**## Directory structure should be:
 
 ```
+C:\Program Files\Android\
+├── cmdline-tools\
+│   └── latest\
+│       ├── bin\
+│       ├── lib\
+│       └── ...
+```**
+
+```
+
 C:\Android\Sdk\
 ├── cmdline-tools\
 │   └── latest\
 │       ├── bin\
 │       ├── lib\
 │       └── ...
+
 ```
 
 ### 4. **Install Android Emulator & System Images** 🔧
 
-```powershell
-# Set environment variables (add to PATH)
-$env:ANDROID_HOME = "C:\Android\Sdk"
-$env:PATH += ";C:\Android\Sdk\cmdline-tools\latest\bin;C:\Android\Sdk\platform-tools;C:\Android\Sdk\emulator"
+**Run these commands in Windows PowerShell (Administrator privileges NOT required):**
 
-# Accept licenses
+```powershell
+# Set environment variables for this session
+$env:ANDROID_HOME = "C:\Program Files\Android"
+$env:PATH += ";C:\Program Files\Android\cmdline-tools\latest\bin;C:\Program Files\Android\platform-tools;C:\Program Files\Android\emulator"
+
+# Accept Android SDK licenses (interactive - you'll need to type 'y' for each license)
 sdkmanager --licenses
 
-# Install essential components
+# Install essential Android components
 sdkmanager "platform-tools" "emulator" "platforms;android-34" "build-tools;34.0.0"
 
 # Install system images for emulator
@@ -93,16 +110,16 @@ avdmanager create avd -n "Pixel_7_API_34" -k "system-images;android-34;google_ap
 Add these to your **System Environment Variables** (not user variables):
 
 ```
-ANDROID_HOME = C:\Android\Sdk
-ANDROID_SDK_ROOT = C:\Android\Sdk
+ANDROID_HOME = C:\Program Files\Android
+ANDROID_SDK_ROOT = C:\Program Files\Android
 ```
 
 Update **PATH** to include:
 
 ```
-C:\Android\Sdk\cmdline-tools\latest\bin
-C:\Android\Sdk\platform-tools
-C:\Android\Sdk\emulator
+C:\Program Files\Android\cmdline-tools\latest\bin
+C:\Program Files\Android\platform-tools
+C:\Program Files\Android\emulator
 ```
 
 ### 2. **Configure BIOS Virtualization Settings** 🔧
@@ -174,9 +191,14 @@ New-NetFirewallRule -DisplayName "Android ADB Server" -Direction Inbound -Protoc
 ### 1. **Clone the Flutter Project**
 
 ```bash
-# In WSL2 terminal
-git clone <your-dartwing-repository-url>
-cd dartwing-project
+# In WSL2 terminal, create projects directory if it doesn't exist
+mkdir -p ~/projects
+cd ~/projects
+
+# Create dartwing folder and clone into it
+mkdir dartwing
+git clone <your-dartwing-repository-url> dartwing
+cd dartwing
 ```
 
 ### 2. **Open in VS Code Container**
@@ -192,7 +214,7 @@ code .
 
 ```powershell
 # In Windows PowerShell
-cd C:\Android\Sdk\platform-tools
+cd "C:\Program Files\Android\platform-tools"
 .\adb.exe start-server
 ```
 
@@ -298,7 +320,7 @@ adb start-server
 
 ```powershell
 # Start ADB server
-cd C:\Android\Sdk\platform-tools && .\adb.exe start-server
+cd "C:\Program Files\Android\platform-tools" && .\adb.exe start-server
 
 # Start emulator
 emulator -avd Pixel_7_API_34
