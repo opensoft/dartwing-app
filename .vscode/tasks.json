@@ -5,7 +5,9 @@
       "label": "Flutter: Clean",
       "type": "shell",
       "command": "flutter",
-      "args": ["clean"],
+      "args": [
+        "clean"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -18,7 +20,10 @@
       "label": "Flutter: Get Dependencies",
       "type": "shell",
       "command": "flutter",
-      "args": ["pub", "get"],
+      "args": [
+        "pub",
+        "get"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -31,7 +36,10 @@
       "label": "Flutter: Build APK",
       "type": "shell",
       "command": "flutter",
-      "args": ["build", "apk"],
+      "args": [
+        "build",
+        "apk"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -44,7 +52,9 @@
       "label": "Flutter: Run Tests",
       "type": "shell",
       "command": "flutter",
-      "args": ["test"],
+      "args": [
+        "test"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -57,7 +67,10 @@
       "label": "Dart: Format Code",
       "type": "shell",
       "command": "dart",
-      "args": ["format", "."],
+      "args": [
+        "format",
+        "."
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -70,7 +83,9 @@
       "label": "Dart: Analyze",
       "type": "shell",
       "command": "dart",
-      "args": ["analyze"],
+      "args": [
+        "analyze"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -78,6 +93,210 @@
         "focus": false,
         "panel": "shared"
       }
+    },
+    {
+      "label": "Emulator: Show Start Instructions",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "start-manual"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: Connect to Host Emulator",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "connect"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: Check Status",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "status"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: Disconnect",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "disconnect"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: List AVDs (via Server)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "list"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: Start AVD (via Server)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "start",
+        "${input:avdName}"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulator: Stop All (via Server)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "stop"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Android: Verify Emulator Connection",
+      "type": "shell",
+      "command": "flutter",
+      "args": ["devices"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Launch Android Emulator",
+      "type": "shell",
+      "command": "%LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe",
+      "args": [
+        "-avd",
+        "${input:chooseAvd}"
+      ],
+      "options": {
+        "cwd": "${env:USERPROFILE}",
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": [
+            "/d",
+            "/c"
+          ]
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Android: Launch Linux Emulator (Port 5558)",
+      "type": "shell",
+      "command": "$ANDROID_HOME/emulator/emulator",
+      "args": [
+        "-avd",
+        "Linux_Emulator",
+        "-no-window",
+        "-no-audio",
+        "-no-accel",
+        "-gpu",
+        "swiftshader_indirect"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Android: Show All Connected Devices",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "devices",
+        "-v"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "avdName",
+      "description": "Enter AVD name to start",
+      "default": "Pixel_7_API_34",
+      "type": "promptString"
+    },
+    {
+      "id": "chooseAvd",
+      "type": "pickString",
+      "description": "Choose an emulator",
+      "options": [
+        "Pixel_8",
+        "Pixel_6_API_33"
+      ],
+      "default": "Pixel_8"
     }
   ]
 }

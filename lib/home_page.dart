@@ -1,19 +1,16 @@
 import 'package:dart_wing_mobile/document_picker_page.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_svg/svg.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:upgrader/upgrader.dart';
 
 import 'dart_wing/gui/base_apps_routers.dart';
-import 'dart_wing/gui/dialogs.dart';
 import 'dart_wing/gui/widgets/base_colors.dart';
 import 'dart_wing/gui/widgets/base_scaffold.dart';
-import 'dart_wing/network/network_clients.dart';
 import 'dart_wing_apps_routers.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.pageTitle}) : super(key: key);
+  HomePage({super.key, required this.pageTitle});
 
   String pageTitle = '';
 
@@ -23,26 +20,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int? _isPressedIndex;
-  bool _loadingOverlayEnabled = false;
+  final bool _loadingOverlayEnabled = false;
 
   List<Widget> _tabs() {
     return const [
-      Tab(
-        text: "Home",
-        icon: Icon(Icons.home),
-      ),
-      Tab(
-        text: "Scanner",
-        icon: Icon(Icons.document_scanner),
-      ),
-      Tab(
-        text: "Settings",
-        icon: Icon(Icons.settings),
-      ),
-      Tab(
-        text: "Notif",
-        icon: Icon(Icons.notifications),
-      ),
+      Tab(text: "Home", icon: Icon(Icons.home)),
+      Tab(text: "Scanner", icon: Icon(Icons.document_scanner)),
+      Tab(text: "Settings", icon: Icon(Icons.settings)),
+      Tab(text: "Notif", icon: Icon(Icons.notifications)),
     ];
   }
 
@@ -50,13 +35,14 @@ class _HomePageState extends State<HomePage> {
     return Container(
       color: BaseColors.lightBackgroundColor,
       child: TabBar(
-          //labelColor: Colors.white,
-          //unselectedLabelColor: Colors.white70,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorPadding: const EdgeInsets.all(5.0),
-          //indicatorColor: Colors.blue,
-          //labelStyle: TextStyle(fontSize: 12),
-          tabs: _tabs()),
+        //labelColor: Colors.white,
+        //unselectedLabelColor: Colors.white70,
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicatorPadding: const EdgeInsets.all(5.0),
+        //indicatorColor: Colors.blue,
+        //labelStyle: TextStyle(fontSize: 12),
+        tabs: _tabs(),
+      ),
     );
   }
 
@@ -64,17 +50,19 @@ class _HomePageState extends State<HomePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[],
+      children: <Widget>[
+        Expanded(child: SvgPicture.asset('lib/dart_wing/gui/images/dart_wing_icon.svg', alignment: Alignment.center)),
+      ],
     );
   }
 
-  _baseTab() {
+  SafeArea _baseTab() {
     return SafeArea(
-        child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Container(
-              color: Colors.grey,
-            )));
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Container(color: Colors.grey),
+      ),
+    );
   }
 
   Widget _scannerTab() {
@@ -108,32 +96,25 @@ class _HomePageState extends State<HomePage> {
           bottomNavigatorBar: _bottomTabMenu(),
           additionalSidebarXItems: [
             SidebarXItem(
-                icon: Icons.account_circle_outlined,
-                label: 'Personal Info',
-                onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(DartWingAppsRouters.personalInfoPage);
-                }),
+              icon: Icons.account_circle_outlined,
+              label: 'Personal Info',
+              onTap: () {
+                Navigator.of(context).pushNamed(DartWingAppsRouters.personalInfoPage);
+              },
+            ),
             SidebarXItem(
-                icon: Icons.people_alt,
-                label: 'Organizations',
-                onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(BaseAppsRouters.organizationsListPage);
-                }),
+              icon: Icons.people_alt,
+              label: 'Organizations',
+              onTap: () {
+                Navigator.of(context).pushNamed(BaseAppsRouters.organizationsListPage);
+              },
+            ),
           ],
           onBarcodeFetched: (barcode) {},
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(10),
-              child: TabBarView(
-                children: [
-                  _appsTab(),
-                  _scannerTab(),
-                  _settingsTab(),
-                  _notificationsTab()
-                ],
-              ),
+              child: TabBarView(children: [_appsTab(), _scannerTab(), _settingsTab(), _notificationsTab()]),
             ),
           ),
         ),

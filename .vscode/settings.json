@@ -1,5 +1,9 @@
 {
   "dart.flutterSdkPath": "/opt/flutter",
+  "android.sdk.path": "/opt/android-sdk",
+  "android.adb.path": "/opt/android-sdk/platform-tools/adb",
+  "deviceLauncher.android.sdkPath": "/opt/android-sdk",
+  "deviceLauncher.android.adbPath": "/opt/android-sdk/platform-tools/adb",
   "dart.debugExternalPackageLibraries": true,
   "dart.debugSdkLibraries": false,
   "dart.previewLsp": true,
