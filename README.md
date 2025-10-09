@@ -54,3 +54,4 @@ This project uses the same containerized setup as the LedgerLinc project with:
 ---
 
 **🌟 Enhanced with Warp Terminal integration for the best Flutter development experience!**
+# Documentation update
