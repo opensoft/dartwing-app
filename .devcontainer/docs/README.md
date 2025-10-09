@@ -8,13 +8,13 @@ This directory contains documentation for the DevContainer development environme
 - **[ANDROID-SDK-HYBRID-SETUP.md](ANDROID-SDK-HYBRID-SETUP.md)** - Hybrid Android SDK setup guide
 - **[HYBRID-ANDROID-SETUP.md](HYBRID-ANDROID-SETUP.md)** - Complete hybrid Android development setup
 
-### ADB (Android Debug Bridge) Configuration  
-- **[README-ADB-Service.md](README-ADB-Service.md)** - ADB service configuration and usage
-- **[ADB-SERVICE-UPDATE.md](ADB-SERVICE-UPDATE.md)** - Updates and changes to ADB service setup
-
 ### Emulator Setup & Testing
 - **[README-Emulator.md](README-Emulator.md)** - Android emulator setup and configuration
 - **[EMULATOR-TESTING-GUIDE.md](EMULATOR-TESTING-GUIDE.md)** - Comprehensive emulator testing guide
+
+### Template & Networking Documentation
+- **[DEVCONTAINER_README.md](DEVCONTAINER_README.md)** - Flutter DevContainer template documentation
+- **[flutter-devcontainer-networking-guide.md](flutter-devcontainer-networking-guide.md)** - Networking architecture guide
 
 ## 🎯 Current Active Configuration
 
@@ -24,6 +24,8 @@ The current DevContainer uses:
 - **Template-managed scripts** (scripts/ folder)
 
 These documentation files are primarily for reference and troubleshooting legacy configurations or alternative setups.
+
+**Note**: Outdated documentation referencing removed components (adb-service containers, docker-compose-with-adb.yml) has been cleaned up as of October 2025.
 
 ## 🔧 Active DevContainer Files
 
