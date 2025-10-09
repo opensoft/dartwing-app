@@ -1,12 +1,11 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
   "name": "PROJECT_NAME Flutter Dev",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
 
   "initializeCommand": {
-    "adb": "${localWorkspaceFolder}/../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh"
+    "adb": "${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh"
   },
 
   "onCreateCommand": {

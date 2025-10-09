@@ -27,19 +27,19 @@
     {
       "label": "🚀 Start ADB Infrastructure",
       "type": "shell",
-      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh",
+      "command": "${workspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh",
       "problemMatcher": []
     },
     {
       "label": "🛑 Stop ADB Infrastructure",
       "type": "shell",
-      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/stop-adb.sh",
+      "command": "${workspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/stop-adb.sh",
       "problemMatcher": []
     },
     {
       "label": "📊 ADB Status Report",
       "type": "shell",
-      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/check-adb.sh",
+      "command": "${workspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/check-adb.sh",
       "problemMatcher": []
     },
     {

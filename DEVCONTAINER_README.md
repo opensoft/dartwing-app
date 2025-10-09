@@ -40,9 +40,9 @@ This container is designed for **individual Flutter projects** and follows the p
    # Run 'id' to check your UID and GID
    ```
 
-4. **Validate configuration** (optional but recommended):
+4. **Validate configuration** (required for manual setup):
    ```bash
-   ./scripts/setup-project.sh
+   ./scripts/manual-setup-project.sh
    ```
 
 5. **Open in VS Code**:
@@ -119,8 +119,8 @@ cp .env.example .env
 # USER_UID=1000  # Run 'id -u' to check
 # USER_GID=1000  # Run 'id -g' to check
 
-# 3. Validate (optional)
-./scripts/setup-project.sh
+# 3. Validate (required for manual setup)
+./scripts/manual-setup-project.sh
 ```
 
 ### Key Variables
@@ -169,7 +169,7 @@ cp .env.example .env
 Use the included validation script to check your configuration:
 
 ```bash
-./scripts/setup-project.sh
+./scripts/manual-setup-project.sh
 ```
 
 This script will:
@@ -179,6 +179,8 @@ This script will:
 - ✅ Verify Docker environment
 - ✅ Test Docker Compose configuration
 - ✅ Check infrastructure path
+
+📖 **For detailed script usage**, see [`scripts/README.md`](scripts/README.md)
 
 ## 🔧 Configuration Details
 
@@ -200,8 +202,8 @@ projects/
 
 **Path Adjustment**: If your project is at a different depth, update the path in `.devcontainer/devcontainer.json`:
 
-- 2 levels deep: `../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh`
 - 3 levels deep: `../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh`
+- 4 levels deep: `../../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh`
 
 ### Customization Placeholders
 
