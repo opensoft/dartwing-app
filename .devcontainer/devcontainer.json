@@ -9,14 +9,14 @@
   },
 
   "onCreateCommand": {
-    "setup-flutter-project": ".devcontainer/scripts/setup-flutter-project.sh"
+    "setup-flutter-project": "../scripts/setup-flutter-project.sh"
   },
 
   "postStartCommand": {
-    "flutter-status": ".devcontainer/scripts/flutter-status.sh"
+    "flutter-status": "../scripts/flutter-status.sh"
   },
 
-  "postAttachCommand": ".devcontainer/scripts/ready-check.sh",
+  "postAttachCommand": "../scripts/ready-check.sh",
 
   "customizations": {
     "vscode": {
