@@ -78,7 +78,7 @@ Desktop.ini
 # Docker & DevContainer
 # ====================================
 # Docker override files (user-specific configurations)
-docker-compose.override.yml
+# docker-compose.override.yml  # Uncommented for Dartwing projects
 docker-compose.*.yml
 
 # DevContainer build cache
