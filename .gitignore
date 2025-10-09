@@ -155,3 +155,6 @@ coverage/
 *.backup
 *.bak
 *.orig
+# Temporary test files
+test_*.txt
+*.test
