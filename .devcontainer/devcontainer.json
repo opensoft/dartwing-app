@@ -1,7 +1,8 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
   "name": "PROJECT_NAME Flutter Dev",
   "dockerComposeFile": "../docker-compose.yml",
-  "service": "flutter-dev",
+  "service": "app",
   "workspaceFolder": "/workspace",
 
   "initializeCommand": {
