@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -9,7 +9,7 @@ RUN apt-get update \
   && apt-get -y install git curl wget unzip xz-utils zip libglu1-mesa \
   ca-certificates gnupg lsb-release software-properties-common \
   build-essential libssl-dev pkg-config sudo openjdk-17-jdk \
-  android-tools-adb android-tools-fastboot \
+  android-tools-adb android-tools-fastboot zsh \
   && apt-get autoremove -y \
   && apt-get clean -y
 
@@ -31,10 +31,25 @@ ARG USER_GID=1000
 ARG USERNAME=brett
 
 # Create user with matching UID/GID and username to avoid permission issues
-RUN groupadd --gid $USER_GID $USERNAME \
-  && useradd --uid $USER_UID --gid $USER_GID -ms /bin/bash $USERNAME \
-  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-  && chmod 0440 /etc/sudoers.d/$USERNAME
+# First, check and remove any existing user/group with the same UID/GID
+RUN set -e && \
+  # Check if UID already exists and delete it FIRST
+  if getent passwd $USER_UID >/dev/null 2>&1; then \
+    EXISTING_USER=$(getent passwd $USER_UID | cut -d: -f1); \
+    echo "Deleting existing user $EXISTING_USER with UID $USER_UID"; \
+    userdel -r $EXISTING_USER 2>/dev/null || true; \
+  fi && \
+  # NOW check if GID already exists and delete it
+  if getent group $USER_GID >/dev/null 2>&1; then \
+    EXISTING_GROUP=$(getent group $USER_GID | cut -d: -f1); \
+    echo "Deleting existing group $EXISTING_GROUP with GID $USER_GID"; \
+    groupdel $EXISTING_GROUP 2>/dev/null || true; \
+  fi && \
+  # Now create the user and group
+  groupadd --gid $USER_GID $USERNAME && \
+  useradd --uid $USER_UID --gid $USER_GID -ms /bin/zsh $USERNAME && \
+  echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+  chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Install Flutter
 ENV FLUTTER_HOME="/opt/flutter"
@@ -87,7 +102,11 @@ USER $USERNAME
 RUN echo "export ANDROID_HOME=\"/opt/android-sdk\"" >> /home/$USERNAME/.bashrc \
   && echo "export ANDROID_SDK_ROOT=\"/opt/android-sdk\"" >> /home/$USERNAME/.bashrc \
   && echo "export PATH=\"\$PATH:/usr/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/emulator:/opt/android-sdk/cmdline-tools/latest/bin\"" >> /home/$USERNAME/.bashrc \
-  && echo "export ADB_SERVER_SOCKET=tcp:host.docker.internal:5037" >> /home/$USERNAME/.bashrc
+  && echo "export ADB_SERVER_SOCKET=tcp:host.docker.internal:5037" >> /home/$USERNAME/.bashrc \
+  && echo "export ANDROID_HOME=\"/opt/android-sdk\"" >> /home/$USERNAME/.zshrc \
+  && echo "export ANDROID_SDK_ROOT=\"/opt/android-sdk\"" >> /home/$USERNAME/.zshrc \
+  && echo "export PATH=\"\$PATH:/usr/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/emulator:/opt/android-sdk/cmdline-tools/latest/bin\"" >> /home/$USERNAME/.zshrc \
+  && echo "export ADB_SERVER_SOCKET=tcp:host.docker.internal:5037" >> /home/$USERNAME/.zshrc
 
 # Create compatibility directories and ensure Flutter can find tools
 RUN mkdir -p /home/$USERNAME/Android/Sdk/platform-tools \

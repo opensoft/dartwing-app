@@ -1,4 +1,5 @@
 {
+  "window.title": "${containerName}",
   "dart.flutterSdkPath": "/opt/flutter",
   "android.sdk.path": "/opt/android-sdk",
   "android.adb.path": "/opt/android-sdk/platform-tools/adb",

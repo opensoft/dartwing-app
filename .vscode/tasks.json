@@ -111,7 +111,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Emulator: Connect to Host Emulator",
+      "label": "Emulator: Check ADB Connection",
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
       "args": [
@@ -127,7 +127,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Emulator: Check Status",
+      "label": "Emulator: Show Connected Devices",
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
       "args": [
@@ -159,11 +159,11 @@
       "problemMatcher": []
     },
     {
-      "label": "Emulator: List AVDs (via Server)",
+      "label": "ADB Service: Check Status",
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
       "args": [
-        "list"
+        "service-status"
       ],
       "group": "build",
       "presentation": {
@@ -175,12 +175,11 @@
       "problemMatcher": []
     },
     {
-      "label": "Emulator: Start AVD (via Server)",
+      "label": "ADB Service: Start/Restart",
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
       "args": [
-        "start",
-        "${input:avdName}"
+        "service-restart"
       ],
       "group": "build",
       "presentation": {
@@ -192,11 +191,27 @@
       "problemMatcher": []
     },
     {
-      "label": "Emulator: Stop All (via Server)",
+      "label": "ADB Service: View Logs",
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
       "args": [
-        "stop"
+        "service-logs"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "ADB Service: Stop",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
+      "args": [
+        "service-stop"
       ],
       "group": "build",
       "presentation": {

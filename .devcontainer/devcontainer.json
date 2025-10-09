@@ -1,14 +1,9 @@
 {
-  "name": "DartWing Flutter Frontend Development",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".",
-    "args": {
-      "USER_UID": "1000",
-      "USER_GID": "1000",
-      "USERNAME": "brett"
-    }
-  },
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
+  "name": "DartWing App",
+  "dockerComposeFile": "docker-compose-with-adb.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -42,7 +37,7 @@
         "davidanson.vscode-markdownlint",
         "adelphes.android-dev-ext",
         // "DiemasMichiels.emulate",
-        "yovelovadia.device-android-ios-launcher",  // Uncomment to try device launcher extension
+        "yovelovadia.device-android-ios-launcher", // Uncomment to try device launcher extension
         "openai.chatgpt"
       ],
       "settings": {
@@ -82,7 +77,8 @@
         "editor.insertSpaces": true,
         "editor.detectIndentation": false,
         "emulator.emulatorPath": "/opt/android-sdk/emulator/emulator",
-        "emulator.adbPath": "/opt/android-sdk/platform-tools/adb"
+        "emulator.adbPath": "/opt/android-sdk/platform-tools/adb",
+        "terminal.integrated.shell.linux": "/bin/zsh"
       }
     }
   },
@@ -90,26 +86,24 @@
     "FLUTTER_ROOT": "/opt/flutter",
     "ANDROID_SDK_ROOT": "/opt/android-sdk",
     "ANDROID_HOME": "/opt/android-sdk",
-    "ADB_SERVER_SOCKET": "tcp:host.docker.internal:5037"
+    "ADB_SERVER_SOCKET": "tcp:adb-service:5037"
   },
   "mounts": [
     // "source=/mnt/c/Users/Brett/AppData/Local/Android/Sdk,target=/home/brett/Android/Sdk,type=bind"  // Commented out - using system Android tools instead
   ],
   "forwardPorts": [
     3000,
-    8080,
+    8180,
     8000,
-    5037,
-    5554,
-    5555,
+    // Note: No port 5037 - container connects to host ADB server
+    5554,  // Emulator console port
+    5555,  // Emulator ADB port
     42000,
     42001,
     42002,
     42003,
     42004
   ],
-  "postCreateCommand": "export ADB_SERVER_SOCKET=tcp:host.docker.internal:5037 && flutter doctor -v && flutter pub get && echo 'Android emulator connection ready!'",
-  "remoteUser": "brett",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "workspaceFolder": "/workspace"
+  "postCreateCommand": "sudo chsh -s /bin/zsh && flutter doctor -v && flutter pub get && echo 'Flutter app container ready! ADB service will handle emulator connection.'",
+  "remoteUser": "brett"
 }

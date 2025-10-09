@@ -41,16 +41,49 @@ This directory contains VS Code Development Container configuration files that p
 ## Usage
 
 ### Prerequisites
-- Docker installed and running
-- VS Code with "Dev Containers" extension
+- **Docker** installed and running
+- **VS Code** with "Dev Containers" extension  
+- **Node.js** (LTS version) - for DevContainer CLI
+- **DevContainer CLI** - Install with: `npm install -g @devcontainers/cli`
+- **Warp Terminal** (recommended) - For enhanced development workflow
 
 ### Getting Started
+
+#### Option 1: VS Code (Traditional)
 1. Open this project in VS Code
 2. When prompted, click "Reopen in Container" or use Command Palette:
    - `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
    - Type "Dev Containers: Reopen in Container"
 3. Wait for the container to build and start
 4. The container will automatically run `flutter --version && flutter pub get`
+
+#### Option 2: Warp Terminal (Enhanced Workflow) 🚀
+
+**Prerequisites:** Ensure you have `beam-me-up` script installed ([Installation Guide](WINDOWS-SETUP-GUIDE.md))
+
+```bash
+# Navigate to project directory
+cd /path/to/dartwing_flutter_frontend
+
+# Check container status
+beam-me-up status
+
+# Start the container (uses DevContainer CLI)
+beam-me-up start
+
+# Connect to warpified container environment
+beam-me-up connect
+
+# Install AI assistant in container (optional)
+beam-me-up install-ai
+```
+
+**Warpified Environment Features:**
+- 📱 **Flutter shortcuts**: `frun`, `fbuild`, `ftest`, `fpub`
+- 🤖 **Emulator shortcuts**: `emulator-connect`, `emulator-status`
+- 🧠 **AI assistance**: `ai "your question"` (after install-ai)
+- ⚡ **Enhanced prompt**: Shows project info and git status
+- 🎯 **Smart detection**: Automatically configures for Flutter/Android development
 
 ### Port Forwarding
 The following ports are automatically forwarded:

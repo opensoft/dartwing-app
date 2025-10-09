@@ -1,16 +1,56 @@
-# dart_wing_mobile
+# DartWing Flutter Mobile
 
-A new Flutter project.
+A Flutter application for DartWing, developed using containerized development environment with enhanced Warp terminal integration.
 
-## Getting Started
+## 🚀 Quick Start (Warp Terminal - Recommended)
 
-This project is a starting point for a Flutter application.
+```bash
+# Navigate to project directory
+cd dartwing_flutter_frontend
 
-A few resources to get you started if this is your first Flutter project:
+# Check container status
+beam-me-up status
 
+# Start the container
+beam-me-up start
+
+# Connect to warpified environment
+beam-me-up connect
+```
+
+## 📋 Prerequisites
+
+### Required Software
+- **Docker** - Container runtime
+- **VS Code** with "Dev Containers" extension
+- **Node.js** (LTS version) - Required for DevContainer CLI
+- **DevContainer CLI** - `npm install -g @devcontainers/cli`
+- **Warp Terminal** (recommended) - For enhanced workflow
+
+### Complete Setup
+- **Windows Users**: See [Windows Setup Guide](WINDOWS-SETUP-GUIDE.md)
+- **All Platforms**: See [DevContainer CLI Setup](../DEVCONTAINER-CLI-SETUP.md)
+
+## 🛠 Development Environment
+
+This project uses the same containerized setup as the LedgerLinc project with:
+- **Flutter SDK** pre-installed
+- **Android SDK** and emulator support
+- **Warpified environment** with Flutter shortcuts
+- **AI assistant** support (optional)
+
+## 📚 Documentation
+
+- [Windows Setup Guide](WINDOWS-SETUP-GUIDE.md) - Complete Windows development setup
+- [DevContainer README](README.devcontainer.md) - Container configuration details
+- [DevContainer CLI Setup](../DEVCONTAINER-CLI-SETUP.md) - Organization-wide CLI setup
+
+## 🔗 Related Resources
+
+- [Flutter Documentation](https://docs.flutter.dev/) - Official Flutter docs
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+**🌟 Enhanced with Warp Terminal integration for the best Flutter development experience!**

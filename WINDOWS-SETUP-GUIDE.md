@@ -96,7 +96,29 @@ avdmanager create avd -n "Pixel_7_API_34" -k "system-images;android-34;google_ap
 - Install the **Remote - Containers** extension
 - Install the **WSL** extension
 
-### 6. **Install Git** 🔄
+### 6. **Install Node.js** 🟢
+
+- Download from: <https://nodejs.org/> (LTS version recommended)
+- Use default settings during installation
+- This is required for the DevContainer CLI
+
+### 7. **Install DevContainer CLI** 📦
+
+```powershell
+# Run in PowerShell (Administrator NOT required)
+npm install -g @devcontainers/cli
+
+# Verify installation
+devcontainer --version
+```
+
+**Why this is needed:** The DevContainer CLI enables:
+- Consistent container builds across different environments
+- Proper integration with VS Code DevContainer features
+- Enhanced Warp workflow automation
+- Better container lifecycle management
+
+### 8. **Install Git** 🔄
 
 - Download from: <https://git-scm.com/download/win>
 - Use default settings during installation
@@ -366,6 +388,8 @@ scrcpy
 - [ ] Environment variables set (ANDROID_HOME, PATH)
 - [ ] Firewall rule for ADB (port 5037)
 - [ ] VS Code with Remote-Containers extension
+- [ ] Node.js installed
+- [ ] **DevContainer CLI installed** (`devcontainer --version` works)
 - [ ] Git installed
 - [ ] Flutter project cloned
 - [ ] Container builds and connects to emulator
