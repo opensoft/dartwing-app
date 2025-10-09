@@ -9,14 +9,15 @@
   },
 
   "onCreateCommand": {
-    "setup-flutter-project": "../scripts/setup-flutter-project.sh"
+    "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'"
   },
 
   "postStartCommand": {
-    "flutter-status": "../scripts/flutter-status.sh"
+    "flutter-status": "./scripts/flutter-status.sh",
+    "setup-flutter-project": "./scripts/setup-flutter-project.sh"
   },
 
-  "postAttachCommand": "../scripts/ready-check.sh",
+  "postAttachCommand": "./scripts/ready-check.sh",
 
   "customizations": {
     "vscode": {

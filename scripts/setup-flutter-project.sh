@@ -90,6 +90,9 @@ cleanup() {
 
 trap cleanup EXIT
 
+# Change to project root directory (parent of scripts directory)
+cd "$(dirname "$0")/.." || exit 1
+
 # ====================================
 # Setup Functions
 # ====================================
