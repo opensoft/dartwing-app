@@ -2,32 +2,44 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Flutter: Debug",
-      "type": "dart",
+      "name": "Debug Flutter App",
       "request": "launch",
+      "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "debug"
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
     },
     {
-      "name": "Flutter: Profile",
-      "type": "dart",
+      "name": "Debug Flutter App (Profile)",
       "request": "launch",
+      "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "profile"
+      "flutterMode": "profile",
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
     },
     {
-      "name": "Flutter: Release",
-      "type": "dart",
+      "name": "Debug Flutter App (Release)",
       "request": "launch",
+      "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "release"
+      "flutterMode": "release",
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
     },
     {
-      "name": "Dart: Run Tests",
-      "type": "dart",
+      "name": "Debug Flutter Test",
       "request": "launch",
-      "program": "test/",
-      "console": "terminal"
+      "type": "dart",
+      "codeLens": {
+        "for": [
+          "run-test",
+          "run-test-file"
+        ]
+      }
     }
   ]
 }

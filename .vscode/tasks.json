@@ -2,316 +2,111 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Flutter: Clean",
+      "label": "🔌 Check ADB Connection",
       "type": "shell",
-      "command": "flutter",
-      "args": [
-        "clean"
-      ],
-      "group": "build",
+      "command": "adb devices -l",
+      "problemMatcher": [],
       "presentation": {
-        "echo": true,
         "reveal": "always",
-        "focus": false,
         "panel": "shared"
       }
     },
     {
-      "label": "Flutter: Get Dependencies",
+      "label": "🔄 Restart ADB Server",
       "type": "shell",
-      "command": "flutter",
-      "args": [
-        "pub",
-        "get"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Flutter: Build APK",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "apk"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Flutter: Run Tests",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "test"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Dart: Format Code",
-      "type": "shell",
-      "command": "dart",
-      "args": [
-        "format",
-        "."
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Dart: Analyze",
-      "type": "shell",
-      "command": "dart",
-      "args": [
-        "analyze"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Emulator: Show Start Instructions",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "start-manual"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
+      "command": "docker restart shared-adb-server && sleep 2 && adb devices",
       "problemMatcher": []
     },
     {
-      "label": "Emulator: Check ADB Connection",
+      "label": "📋 View ADB Logs",
       "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "connect"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Emulator: Show Connected Devices",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "status"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Emulator: Disconnect",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "disconnect"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "ADB Service: Check Status",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "service-status"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "ADB Service: Start/Restart",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "service-restart"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "ADB Service: View Logs",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "service-logs"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "ADB Service: Stop",
-      "type": "shell",
-      "command": "${workspaceFolder}/.devcontainer/emulator-helper.sh",
-      "args": [
-        "service-stop"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Android: Verify Emulator Connection",
-      "type": "shell",
-      "command": "flutter",
-      "args": ["devices"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Launch Android Emulator",
-      "type": "shell",
-      "command": "%LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe",
-      "args": [
-        "-avd",
-        "${input:chooseAvd}"
-      ],
-      "options": {
-        "cwd": "${env:USERPROFILE}",
-        "shell": {
-          "executable": "C:\\Windows\\System32\\cmd.exe",
-          "args": [
-            "/d",
-            "/c"
-          ]
-        }
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Android: Launch Linux Emulator (Port 5558)",
-      "type": "shell",
-      "command": "$ANDROID_HOME/emulator/emulator",
-      "args": [
-        "-avd",
-        "Linux_Emulator",
-        "-no-window",
-        "-no-audio",
-        "-no-accel",
-        "-gpu",
-        "swiftshader_indirect"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
+      "command": "docker logs -f shared-adb-server",
       "isBackground": true,
       "problemMatcher": []
     },
     {
-      "label": "Android: Show All Connected Devices",
+      "label": "🚀 Start ADB Infrastructure",
       "type": "shell",
-      "command": "flutter",
-      "args": [
-        "devices",
-        "-v"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      }
-    }
-  ],
-  "inputs": [
-    {
-      "id": "avdName",
-      "description": "Enter AVD name to start",
-      "default": "Pixel_7_API_34",
-      "type": "promptString"
+      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh",
+      "problemMatcher": []
     },
     {
-      "id": "chooseAvd",
-      "type": "pickString",
-      "description": "Choose an emulator",
-      "options": [
-        "Pixel_8",
-        "Pixel_6_API_33"
-      ],
-      "default": "Pixel_8"
+      "label": "🛑 Stop ADB Infrastructure",
+      "type": "shell",
+      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/stop-adb.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "📊 ADB Status Report",
+      "type": "shell",
+      "command": "${workspaceFolder}/../../infrastructure/mobile/android/adb/scripts/check-adb.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "🩺 Flutter Doctor",
+      "type": "shell",
+      "command": "flutter doctor -v",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "📦 Flutter Pub Get",
+      "type": "shell",
+      "command": "flutter pub get",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🧹 Flutter Clean",
+      "type": "shell",
+      "command": "flutter clean",
+      "problemMatcher": []
+    },
+    {
+      "label": "🔧 Flutter Pub Upgrade",
+      "type": "shell",
+      "command": "flutter pub upgrade",
+      "problemMatcher": []
+    },
+    {
+      "label": "🎯 Flutter Analyze",
+      "type": "shell",
+      "command": "flutter analyze",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🧪 Flutter Test",
+      "type": "shell",
+      "command": "flutter test",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "📱 Flutter Run (Debug)",
+      "type": "shell",
+      "command": "flutter run --debug",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "🚀 Flutter Run (Release)",
+      "type": "shell",
+      "command": "flutter run --release",
+      "problemMatcher": [],
+      "isBackground": true
     }
   ]
 }
