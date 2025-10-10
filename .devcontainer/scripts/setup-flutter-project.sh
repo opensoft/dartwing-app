@@ -154,14 +154,20 @@ check_and_upgrade_flutter() {
         elif echo "$upgrade_output" | grep -q "A new version of Flutter is available"; then
             log_warning "Flutter update available - performing automatic upgrade..."
             
-            # Perform the actual upgrade
-            if flutter upgrade 2>&1 | tee -a "$LOG_FILE"; then
+            # Perform the actual upgrade with timeout
+            if timeout 300 flutter upgrade 2>&1 | tee -a "$LOG_FILE"; then
                 local new_version
                 new_version=$(flutter --version | head -n 1 | grep -oP 'Flutter \K[0-9]+\.[0-9]+\.[0-9]+' || echo "unknown")
                 log_success "Flutter upgraded successfully to version: $new_version"
             else
-                log_error "Flutter upgrade failed"
-                return 1
+                local exit_code=$?
+                if [ $exit_code -eq 124 ]; then
+                    log_warning "Flutter upgrade timed out after 300 seconds"
+                    log_info "Continuing with current Flutter version..."
+                else
+                    log_error "Flutter upgrade failed"
+                    return 1
+                fi
             fi
         else
             log_info "Flutter version check completed"
@@ -177,21 +183,33 @@ check_and_upgrade_flutter() {
 install_dependencies() {
     log_section "Installing Flutter Dependencies"
     
-    # Run flutter pub get with error handling
-    log_info "Running 'flutter pub get'..."
-    if flutter pub get 2>&1 | tee -a "$LOG_FILE"; then
+    # Run flutter pub get with timeout and error handling
+    log_info "Running 'flutter pub get' (timeout: 120s)..."
+    if timeout 120 flutter pub get 2>&1 | tee -a "$LOG_FILE"; then
         log_success "Dependencies installed successfully"
     else
-        log_error "Failed to install dependencies with 'flutter pub get'"
-        return 1
+        local exit_code=$?
+        if [ $exit_code -eq 124 ]; then
+            log_warning "'flutter pub get' timed out after 120 seconds"
+            log_info "Dependencies may still be installing in background"
+        else
+            log_error "Failed to install dependencies with 'flutter pub get'"
+            return 1
+        fi
     fi
     
-    # Run flutter precache (but don't fail if it doesn't work)
-    log_info "Running 'flutter precache' for faster subsequent builds..."
-    if flutter precache --android 2>&1 | tee -a "$LOG_FILE"; then
+    # Run flutter precache with timeout (but don't fail if it doesn't work)
+    log_info "Running 'flutter precache' (timeout: 60s) for faster subsequent builds..."
+    if timeout 60 flutter precache --android 2>&1 | tee -a "$LOG_FILE"; then
         log_success "Flutter precache completed"
     else
-        log_warning "Flutter precache failed (not critical - continuing)"
+        local exit_code=$?
+        if [ $exit_code -eq 124 ]; then
+            log_warning "'flutter precache' timed out after 60 seconds"
+        else
+            log_warning "Flutter precache failed (not critical - continuing)"
+        fi
+    fi
     fi
     
     return 0
@@ -201,11 +219,16 @@ verify_setup() {
     log_section "Verifying Setup"
     
     # Check flutter doctor
-    log_info "Running 'flutter doctor'..."
-    if flutter doctor 2>&1 | tee -a "$LOG_FILE"; then
+    log_info "Running 'flutter doctor' (timeout: 60s)..."
+    if timeout 60 flutter doctor 2>&1 | tee -a "$LOG_FILE"; then
         log_success "Flutter doctor completed"
     else
-        log_warning "Flutter doctor reported issues (check logs for details)"
+        local exit_code=$?
+        if [ $exit_code -eq 124 ]; then
+            log_warning "'flutter doctor' timed out after 60 seconds"
+        else
+            log_warning "Flutter doctor reported issues (check logs for details)"
+        fi
     fi
     
     # List dependencies
