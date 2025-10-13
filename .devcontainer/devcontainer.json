@@ -17,7 +17,6 @@
   },
 
   "postStartCommand": [
-    "sed -i 's|^vscode:.*:/bin/bash|vscode:x:1000:1000::/home/vscode:/bin/zsh|' /etc/passwd",
     "echo '🚀 Container started - initializing Flutter environment...'",
     "echo '🔧 Ensuring Dartwingers service dependency...' && ../../../infrastructure/mobile/android/adb/scripts/start-dartwingers-service-if-needed-minimal.sh",
     "flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'",
