@@ -17,7 +17,7 @@ services:
         DEBUG_MODE: ${DEBUG_MODE:-false}
     
     # Container configuration from .env
-    container_name: ${PROJECT_NAME:-myproject}
+    container_name: ${PROJECT_NAME:-myproject}_app
     
     # Run as user specified in .env with defaults
     user: "${USER_UID:-1000}:${USER_GID:-1000}"

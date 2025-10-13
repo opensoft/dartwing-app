@@ -1,5 +1,5 @@
 {
-  "name": "app Flutter Dev",
+  "name": "dartwing-app Flutter Dev",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
