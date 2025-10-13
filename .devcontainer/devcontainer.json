@@ -43,7 +43,8 @@
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll": "explicit"
-        }
+        },
+        "terminal.integrated.shell.linux": "/bin/zsh"
       }
     }
   }
