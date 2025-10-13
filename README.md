@@ -131,6 +131,7 @@ This app works alongside the DartWing gatekeeper service:
 
 ## 🧪 Testing
 
+### Local Testing
 ```bash
 # Run all tests
 flutter test
@@ -141,6 +142,21 @@ flutter test --coverage
 # Run specific test file
 flutter test test/widget_test.dart
 ```
+
+### Automated Testing (CI/CD)
+This project includes a GitHub Actions workflow that automatically runs tests on every push and pull request to `main` and `develop` branches.
+
+**Workflow Features:**
+- 🔍 Code formatting verification
+- 📊 Static code analysis (`flutter analyze`)
+- ✅ Automated test execution
+- 🚀 Flutter 3.24.0 environment
+
+**Trigger the workflow:**
+- Automatically on push/PR to `main` or `develop`
+- Manually via GitHub Actions UI (workflow_dispatch)
+
+View workflow runs in the [Actions tab](../../actions) of this repository.
 
 ## 🚀 Building and Deployment
 
