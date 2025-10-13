@@ -67,5 +67,6 @@
       ],
       "url": "https://json.schemastore.org/pubspec.json"
     }
-  ]
+  ],
+  "remote.autoForwardPortsFallback": 0
 }
