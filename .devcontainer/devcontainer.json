@@ -1,5 +1,5 @@
 {
-  "name": "dartwing-app",
+  "name": "PROJECT_NAME_PLACEHOLDER",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -7,7 +7,7 @@
   "overrideCommand": false,
 
   "initializeCommand": {
-    "set-project-name": "bash -c 'source .devcontainer/.env && PROJECT_NAME=${PROJECT_NAME:-dartwing-app}; sed -i \"s/dartwing-app/$PROJECT_NAME/g\" ${localWorkspaceFolder}/.devcontainer/devcontainer.json'",
+    "set-project-name": "bash -c 'source .devcontainer/.env && PROJECT_NAME=${PROJECT_NAME:-myproject}; sed -i \"s/PROJECT_NAME_PLACEHOLDER/$PROJECT_NAME/g\" ${localWorkspaceFolder}/.devcontainer/devcontainer.json'",
     "ensure-adb-infrastructure": "bash -c 'if docker ps --format \"table {{.Names}}\" | grep -q \"^shared-adb-server$\"; then echo \"✅ ADB server already running\"; else echo \"🔧 ADB server not found - will attempt to start infrastructure...\"; docker compose -p infrastructure -f ../../../infrastructure/mobile/android/adb/docker-compose.yml up -d 2>/dev/null || echo \"⚠️ No ADB infrastructure available - manual setup may be required\"; fi'"
   },
 
