@@ -452,3 +452,4 @@ class _TestErrorAppState extends State<TestErrorApp> {
       ),
     );
   }
+}
