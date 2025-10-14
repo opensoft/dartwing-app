@@ -58,7 +58,9 @@ jobs:
     - name: Check for merge conflicts
       run: |
         echo "Checking for merge conflict markers..."
-        if grep -r "<<<<<<< \|======= \|>>>>>>> " --include="*.dart" --include="*.yaml" --include="*.yml" .; then
+        # Check for merge conflict markers using pattern that avoids self-detection
+        CONFLICT_PATTERNS="<<<<<<<|=======|>>>>>>>"
+        if grep -r -E "$CONFLICT_PATTERNS" --include="*.dart" --include="*.yaml" --include="*.yml" .; then
           echo "❌ Merge conflict markers found!"
           exit 1
         else
