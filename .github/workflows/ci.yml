@@ -236,14 +236,14 @@ jobs:
           SUBMODULE_FLAG="${{ steps.integration-submodule-check.outputs.submodule_available }}"
           API_LEVEL="${{ matrix.api-level }}"
           
-          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL} || {
+          if ! flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
             echo "⚠️ First integration test run failed, retrying once..."
             sleep 5
-            flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL} || {
+            if ! flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
               echo "❌ Integration tests failed after retry"
               exit 1
-            }
-          }
+            fi
+          fi
           
           echo "✅ Integration tests completed successfully"
     
