@@ -1,0 +1,283 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: "17"
+
+jobs:
+  # Stage 1: Code Quality & Static Analysis (Parallel)
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Verify dependencies
+      run: flutter pub deps
+    
+    - name: Flutter analyze
+      run: flutter analyze --fatal-infos
+    
+    - name: Check formatting
+      run: flutter format --set-exit-if-changed .
+    
+    - name: Check for outdated dependencies
+      run: flutter pub outdated
+
+  # Stage 2: Unit & Widget Testing (Parallel)
+  test:
+    name: Unit & Widget Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Run tests with coverage
+      run: flutter test --coverage --reporter=expanded
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # Stage 3: Integration Testing (Sequential)
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [code-quality, test]
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'integration-test'))
+    
+    strategy:
+      matrix:
+        api-level: [30]
+        target: [google_apis]
+        arch: [x86_64]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Enable KVM group perms
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    
+    - name: Gradle cache
+      uses: gradle/actions/setup-gradle@v3
+    
+    - name: AVD cache
+      uses: actions/cache@v4
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
+    
+    - name: Create AVD and generate snapshot for caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: ${{ matrix.target }}
+        arch: ${{ matrix.arch }}
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
+        script: echo "Generated AVD snapshot for caching."
+    
+    - name: Run integration tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: ${{ matrix.target }}
+        arch: ${{ matrix.arch }}
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            --debug \
+            --dart-define=CI=true || true
+    
+    - name: Upload screenshots
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: integration-test-screenshots
+        path: screenshots/
+        retention-days: 30
+
+  # Stage 4: Build Verification (Parallel)
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [code-quality, test]
+    
+    strategy:
+      matrix:
+        build-type: [debug, release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build debug APK
+      if: matrix.build-type == 'debug'
+      run: |
+        flutter build apk --debug
+        mv build/app/outputs/flutter-apk/app-debug.apk build/app/outputs/flutter-apk/dartwing-debug.apk
+    
+    - name: Build release APK
+      if: matrix.build-type == 'release'
+      run: |
+        flutter build apk --release
+        mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/dartwing-release-unsigned.apk
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dartwing-${{ matrix.build-type }}-apk
+        path: build/app/outputs/flutter-apk/dartwing-*.apk
+        retention-days: 30
+    
+    - name: APK file info
+      run: |
+        ls -la build/app/outputs/flutter-apk/
+        if [ -f "build/app/outputs/flutter-apk/dartwing-${{ matrix.build-type }}*.apk" ]; then
+          file build/app/outputs/flutter-apk/dartwing-${{ matrix.build-type }}*.apk
+        fi
+
+  # Stage 5: Results Summary
+  results:
+    name: Results Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [code-quality, test, integration-test, build]
+    
+    steps:
+    - name: Check results
+      run: |
+        echo "## CI Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.code-quality.result }}" == "success" ]; then
+          echo "✅ Code Quality: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Code Quality: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.test.result }}" == "success" ]; then
+          echo "✅ Unit Tests: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Unit Tests: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.integration-test.result }}" == "success" ]; then
+          echo "✅ Integration Tests: Passed" >> $GITHUB_STEP_SUMMARY
+        elif [ "${{ needs.integration-test.result }}" == "skipped" ]; then
+          echo "⏭️ Integration Tests: Skipped" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Integration Tests: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.build.result }}" == "success" ]; then
+          echo "✅ Build: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Build: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts Available:" >> $GITHUB_STEP_SUMMARY
+        echo "- Debug APK: dartwing-debug-apk" >> $GITHUB_STEP_SUMMARY
+        echo "- Release APK: dartwing-release-apk" >> $GITHUB_STEP_SUMMARY
+        
+        # Set overall status
+        if [ "${{ needs.code-quality.result }}" == "success" ] && \
+           [ "${{ needs.test.result }}" == "success" ] && \
+           [ "${{ needs.build.result }}" == "success" ]; then
+          echo "🎉 **Overall Status: SUCCESS**" >> $GITHUB_STEP_SUMMARY
+          exit 0
+        else
+          echo "💥 **Overall Status: FAILED**" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
