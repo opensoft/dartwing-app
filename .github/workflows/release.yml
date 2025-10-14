@@ -22,7 +22,7 @@ on:
       - 'v*'
 
 env:
-  FLUTTER_VERSION: "3.24.5"
+  FLUTTER_VERSION: "stable"
   JAVA_VERSION: "17"
 
 jobs:
