@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -231,7 +230,7 @@ void main() {
 
 // Test helper widgets
 class TestNavigationApp extends StatelessWidget {
-  const TestNavigationApp({Key? key}) : super(key: key);
+  const TestNavigationApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +258,7 @@ class TestNavigationApp extends StatelessWidget {
 }
 
 class SecondScreen extends StatelessWidget {
-  const SecondScreen({Key? key}) : super(key: key);
+  const SecondScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +278,7 @@ class SecondScreen extends StatelessWidget {
 }
 
 class TestFormApp extends StatefulWidget {
-  const TestFormApp({Key? key}) : super(key: key);
+  const TestFormApp({super.key});
 
   @override
   State<TestFormApp> createState() => _TestFormAppState();
@@ -325,7 +324,7 @@ class _TestFormAppState extends State<TestFormApp> {
 }
 
 class TestPasswordApp extends StatefulWidget {
-  const TestPasswordApp({Key? key}) : super(key: key);
+  const TestPasswordApp({super.key});
 
   @override
   State<TestPasswordApp> createState() => _TestPasswordAppState();
@@ -362,7 +361,7 @@ class _TestPasswordAppState extends State<TestPasswordApp> {
 }
 
 class TestLoadingApp extends StatefulWidget {
-  const TestLoadingApp({Key? key}) : super(key: key);
+  const TestLoadingApp({super.key});
 
   @override
   State<TestLoadingApp> createState() => _TestLoadingAppState();
@@ -412,7 +411,7 @@ class _TestLoadingAppState extends State<TestLoadingApp> {
 }
 
 class TestErrorApp extends StatefulWidget {
-  const TestErrorApp({Key? key}) : super(key: key);
+  const TestErrorApp({super.key});
 
   @override
   State<TestErrorApp> createState() => _TestErrorAppState();
@@ -437,7 +436,7 @@ class _TestErrorAppState extends State<TestErrorApp> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_hasError) ..[
+            if (_hasError) ...[
               const Icon(Icons.error, color: Colors.red, size: 48),
               const SizedBox(height: 16),
             ],
