@@ -224,6 +224,8 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
+          # Write integration test script to file
+          cat > integration_test.sh << 'EOF'
           #!/bin/bash
           set -e
           
@@ -254,6 +256,11 @@ jobs:
               exit 1
             fi
           fi
+          EOF
+          
+          # Make script executable and run it
+          chmod +x integration_test.sh
+          ./integration_test.sh
     
     - name: Collect integration test results
       if: always()
