@@ -224,11 +224,6 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
-          # Write integration test script to file
-          cat > integration_test.sh << 'EOF'
-          #!/bin/bash
-          set -e
-          
           echo "🚀 Starting integration tests on Android API ${{ matrix.api-level }}"
           echo "Submodule available: ${{ steps.integration-submodule-check.outputs.submodule_available }}"
           
@@ -237,30 +232,38 @@ jobs:
           export CI=true
           export ANDROID_API_LEVEL=${{ matrix.api-level }}
           
-          # Run integration tests with retry logic
-          SUBMODULE_FLAG="${{ steps.integration-submodule-check.outputs.submodule_available }}"
-          API_LEVEL="${{ matrix.api-level }}"
+          # Run integration tests (first attempt)
+          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${{ steps.integration-submodule-check.outputs.submodule_available }} --dart-define=ANDROID_API_LEVEL=${{ matrix.api-level }}
           
-          # First attempt
-          if flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
-            echo "✅ Integration tests completed successfully"
-          else
-            echo "⚠️ First integration test run failed, retrying once..."
-            sleep 5
-            
-            # Retry attempt
-            if flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
-              echo "✅ Integration tests completed successfully on retry"
-            else
-              echo "❌ Integration tests failed after retry"
-              exit 1
-            fi
-          fi
-          EOF
+          echo "✅ Integration tests completed successfully"
+    
+    - name: Retry integration tests
+      if: failure()
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: ${{ matrix.target }}
+        arch: ${{ matrix.arch }}
+        profile: ${{ matrix.profile || 'Nexus 6' }}
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: |
+          echo "⚠️ Integration test retry on Android API ${{ matrix.api-level }}"
+          echo "Submodule available: ${{ steps.integration-submodule-check.outputs.submodule_available }}"
           
-          # Make script executable and run it
-          chmod +x integration_test.sh
-          ./integration_test.sh
+          # Set environment variables for conditional testing
+          export SUBMODULE_AVAILABLE="${{ steps.integration-submodule-check.outputs.submodule_available }}"
+          export CI=true
+          export ANDROID_API_LEVEL=${{ matrix.api-level }}
+          
+          # Wait a moment before retry
+          sleep 5
+          
+          # Run integration tests (retry attempt)
+          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${{ steps.integration-submodule-check.outputs.submodule_available }} --dart-define=ANDROID_API_LEVEL=${{ matrix.api-level }}
+          
+          echo "✅ Integration tests completed successfully on retry"
     
     - name: Collect integration test results
       if: always()
