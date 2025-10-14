@@ -6,7 +6,6 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
 
 env:
-  FLUTTER_VERSION: "stable"
   JAVA_VERSION: "17"
 
 # Cancel previous runs if a new push is made
@@ -38,7 +37,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable
         cache: true
     
     - name: Install dependencies
@@ -84,7 +83,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable
         cache: true
     
     - name: Install dependencies
@@ -127,7 +126,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable
         cache: true
     
     - name: Install dependencies
@@ -154,7 +153,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable
         cache: true
     
     - name: Install dependencies
