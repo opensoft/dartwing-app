@@ -23,7 +23,7 @@ void main() {
     // Verify that our test app loads.
     expect(find.text('CI Test App'), findsOneWidget);
     
-    print('✅ CI infrastructure test passed!');
+    // CI infrastructure test passed
   });
   
   testWidgets('Flutter environment validation', (WidgetTester tester) async {
@@ -42,6 +42,6 @@ void main() {
     expect(find.text('Test'), findsOneWidget);
     expect(find.text('Environment OK'), findsOneWidget);
     
-    print('✅ Flutter environment validation passed!');
+    // Flutter environment validation passed
   });
 }
