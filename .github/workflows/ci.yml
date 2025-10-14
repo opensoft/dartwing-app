@@ -21,8 +21,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: recursive
-        token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
+        # Don't fail if submodules can't be checked out
+        submodules: false
+        token: ${{ github.token }}
+    
+    - name: Try to checkout submodules
+      continue-on-error: true
+      run: |
+        echo "Attempting to checkout submodules..."
+        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
+          echo "Using SUBMODULE_TOKEN for authentication"
+          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
+        fi
+        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
     
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -64,8 +75,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: recursive
-        token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
+        submodules: false
+        token: ${{ github.token }}
+    
+    - name: Try to checkout submodules
+      continue-on-error: true
+      run: |
+        echo "Attempting to checkout submodules..."
+        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
+          echo "Using SUBMODULE_TOKEN for authentication"
+          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
+        fi
+        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
     
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -111,8 +132,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: recursive
-        token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
+        submodules: false
+        token: ${{ github.token }}
+    
+    - name: Try to checkout submodules
+      continue-on-error: true
+      run: |
+        echo "Attempting to checkout submodules..."
+        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
+          echo "Using SUBMODULE_TOKEN for authentication"
+          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
+        fi
+        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
     
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -200,9 +231,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        # Required for submodules
-        submodules: recursive
-        token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
+        submodules: false
+        token: ${{ github.token }}
+    
+    - name: Try to checkout submodules
+      continue-on-error: true
+      run: |
+        echo "Attempting to checkout submodules..."
+        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
+          echo "Using SUBMODULE_TOKEN for authentication"
+          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
+        fi
+        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
     
     - name: Setup Java
       uses: actions/setup-java@v4

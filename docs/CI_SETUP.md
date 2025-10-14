@@ -49,6 +49,7 @@ To enable full builds with submodule access:
 2. **Add GitHub Secret**:
    - Go to GitHub repository → Settings → Secrets and variables → Actions
    - Add secret named `SUBMODULE_TOKEN` with the PAT value
+   - **Format**: For Azure DevOps, use a PAT with `Code (read)` permissions
 
 3. **Alternative: SSH Key Setup**:
    ```bash
@@ -120,13 +121,15 @@ git commit -m "Update dart_wing submodule"
    - Check if `lib/dart_wing` directory has content
    - Verify submodule access credentials
 
-2. **Authentication failures**: 
-   - Verify `SUBMODULE_TOKEN` secret is correctly set
-   - Check PAT permissions and expiration
+2. **"could not read Username" errors**: Authentication failure
+   - Verify `SUBMODULE_TOKEN` secret is correctly set in GitHub repository settings
+   - Ensure PAT has `Code (read)` permissions for Azure DevOps project
+   - Check PAT expiration date
 
-3. **Checkout failures**:
-   - May indicate repository access issues
-   - Check if PAT has correct scope
+3. **Submodule checkout failures**:
+   - Expected behavior when `SUBMODULE_TOKEN` is not configured
+   - Builds will skip APK generation and run tests only
+   - This is normal for external contributors and forks
 
 ### CI Status Meanings
 
