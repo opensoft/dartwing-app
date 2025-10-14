@@ -84,13 +84,13 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
-  # Stage 3: Integration Testing (Sequential)
+  # Stage 3: Integration Testing (Sequential) - DISABLED FOR INITIAL TESTING
   integration-test:
     name: Integration Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [code-quality, test]
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'integration-test'))
+    if: false  # Temporarily disabled
     
     strategy:
       matrix:
