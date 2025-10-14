@@ -9,6 +9,20 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # Exclude files that depend on dart_wing submodule (not available in CI)
+    - lib/main.dart
+    - lib/add_user_info_page.dart
+    - lib/dart_wing_apps_routers.dart
+    - lib/dart_wing_mobile_global.dart
+    - lib/document_picker_page.dart
+    - lib/home_page.dart
+    - lib/login_page.dart
+    - lib/login_with_email_page.dart
+    - lib/otp_login_page.dart
+    - lib/personal_info_page.dart
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
