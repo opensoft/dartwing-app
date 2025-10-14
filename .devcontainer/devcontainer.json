@@ -12,11 +12,14 @@
   },
 
   "onCreateCommand": {
-    "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'"
+    "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'",
+    "check-ssh-setup": "bash -c 'if [ -d ~/.ssh ] && [ -n \"$(ls ~/.ssh/*.pub 2>/dev/null)\" ]; then echo \"✅ SSH keys found\"; chmod 700 ~/.ssh && chmod 600 ~/.ssh/* 2>/dev/null || true; else echo \"🔑 No SSH keys found - you may need to generate them:\"; echo \"  ssh-keygen -t ed25519 -C your-email@example.com\"; echo \"  Then add the public key to GitHub\"; fi'",
+    "setup-git": "git config --global --add safe.directory /workspace"
   },
 
   "postStartCommand": [
     "echo '🚀 Container started - initializing Flutter environment...'",
+    "bash -c 'echo \"🔑 Checking GitHub authentication...\"; if gh auth status >/dev/null 2>&1; then echo \"✅ GitHub CLI authenticated\"; else echo \"⚠️ GitHub not authenticated\"; echo \"To set up GitHub access, run one of:\"; echo \"  1) gh auth login          (interactive setup)\"; echo \"  2) gh auth login --web     (browser-based)\"; echo \"  3) Export GITHUB_TOKEN     (use personal token)\"; echo \"\nOr set up SSH keys and run gh auth login\"; fi'",
     "echo '📱 Checking ADB connection...' && timeout 10 adb devices > /dev/null 2>&1 && echo '✅ ADB service connected' || echo '🔄 ADB service connecting...'",
     "flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'",
     "timeout 300 .devcontainer/scripts/setup-flutter-project.sh && echo '✅ Flutter project setup complete' || echo '🔄 Flutter setup running in background...'",
@@ -29,13 +32,26 @@
     "SHELL": "/bin/zsh"
   },
 
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/gh,target=/home/${localEnv:USER}/.config/gh,type=bind,consistency=cached"
+  ],
+
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
   "customizations": {
     "vscode": {
       "extensions": [
         "Dart-Code.dart-code",
         "Dart-Code.flutter",
         "ms-azuretools.vscode-docker",
-        "cschleiden.vscode-github-actions"
+        "GitHub.vscode-github-actions"
       ],
       "settings": {
         "dart.flutterSdkPath": "/flutter",
