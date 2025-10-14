@@ -8,17 +8,17 @@ void main() {
   group('CI Integration Tests - Basic Validation', () {
     testWidgets('Integration test environment works', (tester) async {
       // Create a simple test app for integration testing
-      const testApp = MaterialApp(
+      final testApp = MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Integration Test'),
+            title: const Text('Integration Test'),
           ),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('CI Integration Test'),
-                ElevatedButton(
+                const Text('CI Integration Test'),
+                const ElevatedButton(
                   onPressed: null,
                   child: Text('Test Button'),
                 ),
@@ -44,14 +44,14 @@ void main() {
     
     testWidgets('Widget tree validation', (tester) async {
       // Test basic widget hierarchy without app dependencies
-      const testWidget = MaterialApp(
+      final testWidget = MaterialApp(
         home: Scaffold(
-          appBar: AppBar(title: Text('Test Navigation')),
+          appBar: AppBar(title: const Text('Test Navigation')),
           body: Center(
             child: Column(
               children: [
-                Text('Navigation Test'),
-                ElevatedButton(
+                const Text('Navigation Test'),
+                const ElevatedButton(
                   onPressed: null,
                   child: Text('Test Navigation'),
                 ),
