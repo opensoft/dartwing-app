@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Flutter App",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
+    },
+    {
+      "name": "Debug Flutter App (Profile)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
+    },
+    {
+      "name": "Debug Flutter App (Release)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--dart-define=FLUTTER_WEB_AUTO_DETECT=true"
+      ]
+    },
+    {
+      "name": "Debug Flutter Test",
+      "request": "launch",
+      "type": "dart",
+      "codeLens": {
+        "for": [
+          "run-test",
+          "run-test-file"
+        ]
+      }
+    }
+  ]
+}

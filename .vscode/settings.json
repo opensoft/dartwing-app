@@ -1,0 +1,72 @@
+{
+  // Flutter & Dart Settings
+  "dart.flutterSdkPath": "/flutter",
+  "dart.debugExternalLibraries": true,
+  "dart.debugSdkLibraries": false,
+  "dart.showIgnoreQuickFixes": false,
+  "dart.lineLength": 100,
+  "dart.analysisServerFolding": false,
+  
+  // Editor Settings
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.rulers": [100],
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 100,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  // Code Actions
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  
+  // Files
+  "files.associations": {
+    "*.dart": "dart"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/build": true,
+    "**/.gradle": true,
+    "**/.idea": true,
+    "**/*.iml": true,
+    "**/*.ipr": true,
+    "**/*.iws": true
+  },
+  
+  // Flutter Inspector
+  "dart.flutterShowEmulators": "always",
+  "dart.flutterSelectDeviceWhenConnected": true,
+  
+  // Terminal
+  "terminal.integrated.defaultProfile.linux": "bash",
+  
+  // Search
+  "search.exclude": {
+    "**/build": true,
+    "**/.gradle": true,
+    "**/.idea": true,
+    "**/node_modules": true
+  },
+  
+  // Git
+  "git.ignoreLimitWarning": true,
+  
+  // JSON
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "pubspec.yaml"
+      ],
+      "url": "https://json.schemastore.org/pubspec.json"
+    }
+  ],
+  "remote.autoForwardPortsFallback": 0
+}
