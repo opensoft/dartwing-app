@@ -114,19 +114,30 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
-  # Stage 3: Integration Testing (Sequential) - DISABLED FOR INITIAL TESTING
+  # Stage 3: Integration Testing (Sequential) - CONDITIONAL
   integration-test:
     name: Integration Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [code-quality, test]
-    if: false  # Temporarily disabled
+    # Run integration tests, but allow them to be skipped if environment is not suitable
+    if: ${{ !contains(github.event.head_commit.message, '[skip-integration]') }}
     
     strategy:
       matrix:
-        api-level: [30]
+        api-level: [29, 30]  # Test on multiple Android versions
         target: [google_apis]
         arch: [x86_64]
+        include:
+          # Add specific test configurations
+          - api-level: 29
+            target: google_apis
+            arch: x86_64
+            profile: "Nexus 6"
+          - api-level: 30
+            target: google_apis  
+            arch: x86_64
+            profile: "pixel_xl"
     
     steps:
     - name: Checkout code
@@ -190,21 +201,70 @@ jobs:
         disable-animations: false
         script: echo "Generated AVD snapshot for caching."
     
+    - name: Check submodule status for integration tests
+      id: integration-submodule-check
+      run: |
+        echo "Checking submodule status for integration tests..."
+        if [ -d "lib/dart_wing" ] && [ "$(ls -A lib/dart_wing)" ]; then
+          echo "✅ Submodule dart_wing is available for integration tests"
+          echo "submodule_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "⚠️ Submodule dart_wing is not available - running subset of integration tests"
+          echo "submodule_available=false" >> $GITHUB_OUTPUT
+        fi
+    
     - name: Run integration tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ matrix.api-level }}
         target: ${{ matrix.target }}
         arch: ${{ matrix.arch }}
+        profile: ${{ matrix.profile || 'Nexus 6' }}
         force-avd-creation: false
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
+          echo "🚀 Starting integration tests on Android API ${{ matrix.api-level }}"
+          echo "Submodule available: ${{ steps.integration-submodule-check.outputs.submodule_available }}"
+          
+          # Set environment variables for conditional testing
+          export SUBMODULE_AVAILABLE="${{ steps.integration-submodule-check.outputs.submodule_available }}"
+          export CI=true
+          export ANDROID_API_LEVEL=${{ matrix.api-level }}
+          
+          # Run integration tests with retry logic
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/app_test.dart \
             --debug \
-            --dart-define=CI=true || true
+            --dart-define=CI=true \
+            --dart-define=SUBMODULE_AVAILABLE=${{ steps.integration-submodule-check.outputs.submodule_available }} \
+            --dart-define=ANDROID_API_LEVEL=${{ matrix.api-level }} || {
+              echo "⚠️ First integration test run failed, retrying once..."
+              sleep 5
+              flutter drive \
+                --driver=test_driver/integration_test.dart \
+                --target=integration_test/app_test.dart \
+                --debug \
+                --dart-define=CI=true \
+                --dart-define=SUBMODULE_AVAILABLE=${{ steps.integration-submodule-check.outputs.submodule_available }} \
+                --dart-define=ANDROID_API_LEVEL=${{ matrix.api-level }} || {
+                  echo "❌ Integration tests failed after retry"
+                  exit 1
+                }
+            }
+          
+          echo "✅ Integration tests completed successfully"
+    
+    - name: Collect integration test results
+      if: always()
+      run: |
+        echo "Integration test results for API ${{ matrix.api-level }}:"
+        if [ -d "build/integration_test_results" ]; then
+          ls -la build/integration_test_results/
+        else
+          echo "No specific integration test results directory found"
+        fi
     
     - name: Upload screenshots
       if: failure()
