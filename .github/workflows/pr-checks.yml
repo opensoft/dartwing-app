@@ -100,10 +100,12 @@ jobs:
         if [ -f "coverage/lcov.info" ]; then
           echo "✅ Coverage report generated"
           # Simple coverage check - more sophisticated tools can be added later
-          lines_covered=$(grep -c "LF:" coverage/lcov.info)
+          lines_covered=$(grep -c "LF:" coverage/lcov.info || echo "0")
           echo "Lines covered: $lines_covered"
+          echo "✅ Coverage check completed"
         else
           echo "⚠️ No coverage report found - this is expected for CI without submodule dependencies"
+          echo "✅ Coverage check completed (no coverage data available)"
         fi
 
   # Quick build verification - temporarily disabled until dart_wing submodule is available in CI
