@@ -224,6 +224,9 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
+          #!/bin/bash
+          set -e
+          
           echo "🚀 Starting integration tests on Android API ${{ matrix.api-level }}"
           echo "Submodule available: ${{ steps.integration-submodule-check.outputs.submodule_available }}"
           
@@ -236,16 +239,21 @@ jobs:
           SUBMODULE_FLAG="${{ steps.integration-submodule-check.outputs.submodule_available }}"
           API_LEVEL="${{ matrix.api-level }}"
           
-          if ! flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
+          # First attempt
+          if flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
+            echo "✅ Integration tests completed successfully"
+          else
             echo "⚠️ First integration test run failed, retrying once..."
             sleep 5
-            if ! flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
+            
+            # Retry attempt
+            if flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart --debug --dart-define=CI=true --dart-define=SUBMODULE_AVAILABLE=${SUBMODULE_FLAG} --dart-define=ANDROID_API_LEVEL=${API_LEVEL}; then
+              echo "✅ Integration tests completed successfully on retry"
+            else
               echo "❌ Integration tests failed after retry"
               exit 1
             fi
           fi
-          
-          echo "✅ Integration tests completed successfully"
     
     - name: Collect integration test results
       if: always()
