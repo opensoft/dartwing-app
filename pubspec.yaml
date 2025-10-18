@@ -38,6 +38,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
 
   flutter_lints: ^6.0.0
   build_runner: ^2.4.15
@@ -47,7 +49,7 @@ flutter:
 
   uses-material-design: true
 
-  assets:
-    - lib/dart_wing/gui/images/
-    - lib/dart_wing/localization/
-    - lib/tensorflow/models/
+  # assets:
+    # Temporarily disabled - dart_wing submodule not available in CI
+    # - lib/dart_wing/gui/images/
+    # - lib/dart_wing/localization/

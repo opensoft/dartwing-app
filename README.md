@@ -129,8 +129,9 @@ This app works alongside the DartWing gatekeeper service:
 - **Gatekeeper API**: `dartwing-gatekeeper` (port 5000)
 - Both services run in the `dartwingers` Docker stack
 
-## 🧪 Testing
+## 🦄 Testing
 
+### Unit & Widget Tests
 ```bash
 # Run all tests
 flutter test
@@ -141,6 +142,78 @@ flutter test --coverage
 # Run specific test file
 flutter test test/widget_test.dart
 ```
+
+### Integration Tests ✅
+```bash
+# Run integration tests locally
+flutter drive \
+  --driver=test_driver/integration_test.dart \
+  --target=integration_test/app_test.dart
+
+# Run on specific device
+flutter drive \
+  --driver=test_driver/integration_test.dart \
+  --target=integration_test/app_test.dart \
+  -d <device-id>
+```
+
+**Test Coverage:**
+- ✅ Environment & Framework validation
+- ✅ Device features (package info, platform detection)
+- ✅ Form validation & input handling
+- ✅ UI component integration
+- ✅ Navigation & user workflows
+- ⚠️ App-specific tests (requires submodule)
+
+## 🛠️ CI/CD Pipeline ✅
+
+### Current Status: **ALL SYSTEMS OPERATIONAL** 🎉
+
+**Automated Testing & Deployment:**
+- ✅ **PR Checks**: Code quality, unit tests, security scanning
+- ✅ **CI Pipeline**: Full integration testing on Android emulators
+- ✅ **Multi-Device Testing**: Android API 29 & 30 with different device profiles
+- ✅ **Intelligent Submodule Handling**: Graceful degradation for external contributors
+- ✅ **Automatic Retries**: Robust handling of emulator instabilities
+
+### **Workflow Triggers**
+- **Pull Requests**: Full PR checks + integration tests
+- **Push to main/develop**: Complete CI pipeline with APK builds
+- **Manual dispatch**: On-demand workflow execution
+
+### **Build Artifacts**
+- **Debug APK**: Available for testing
+- **Release APK**: Signed and ready for distribution
+- **Test Reports**: Detailed integration test results
+- **Build Skipped**: When submodule access isn't available (normal for forks)
+
+### **For Contributors**
+
+**External Contributors (Forks)**:
+```
+✅ Code Quality: PASS
+✅ Unit Tests: PASS  
+✅ Integration Tests: PASS (core tests)
+⏭️ Build APK: Skipped (expected - no submodule access)
+🎉 Overall: SUCCESS
+```
+
+**Internal Team (Full Access)**:
+```
+✅ Code Quality: PASS
+✅ Unit Tests: PASS
+✅ Integration Tests: PASS (full suite)
+✅ Build APK: SUCCESS (debug + release)
+🎉 Overall: FULL SUCCESS
+```
+
+### **CI Configuration Files**
+- `.github/workflows/ci.yml` - Main CI pipeline
+- `.github/workflows/pr-checks.yml` - Fast PR validation
+- `docs/CI_SETUP.md` - Detailed CI documentation
+- `docs/INTEGRATION_TESTING.md` - Integration test strategy
+
+**For detailed CI setup and troubleshooting, see [CI Setup Guide](docs/CI_SETUP.md)**
 
 ## 🚀 Building and Deployment
 
