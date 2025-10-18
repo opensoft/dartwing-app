@@ -298,7 +298,7 @@ jobs:
       (github.ref == 'refs/heads/main' ||
        github.ref == 'refs/heads/develop' ||
        contains(github.event.head_commit.message, '[docker]')) &&
-      needs.build.result == 'success'
+      needs.build.conclusion == 'success'
 
     permissions:
       contents: read
