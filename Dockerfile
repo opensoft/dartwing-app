@@ -15,8 +15,8 @@ RUN mkdir -p /apks/debug /apks/release
 
 # Copy APK files from build context
 # These will be copied from build/app/outputs/flutter-apk/ during CI
-COPY build/app/outputs/flutter-apk/dartwing-debug.apk /apks/debug/ 2>/dev/null || true
-COPY build/app/outputs/flutter-apk/dartwing-release-unsigned.apk /apks/release/ 2>/dev/null || true
+RUN cp build/app/outputs/flutter-apk/dartwing-debug.apk /apks/debug/ 2>/dev/null || true && \
+    cp build/app/outputs/flutter-apk/dartwing-release-unsigned.apk /apks/release/ 2>/dev/null || true
 
 # Add metadata file with build information
 RUN echo "Dartwing APK Package" > /apks/README.txt && \
