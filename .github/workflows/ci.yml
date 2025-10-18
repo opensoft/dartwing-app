@@ -327,8 +327,7 @@ jobs:
         echo "Checking downloaded APK files..."
         ls -lh build/app/outputs/flutter-apk/
 
-        if [ ! -f build/app/outputs/flutter-apk/dartwing-debug.apk ] && \
-           [ ! -f build/app/outputs/flutter-apk/dartwing-release-unsigned.apk ]; then
+        if [ ! -f build/app/outputs/flutter-apk/dartwing-debug.apk ] && [ ! -f build/app/outputs/flutter-apk/dartwing-release-unsigned.apk ]; then
           echo "❌ No APK files found - cannot build Docker image"
           exit 1
         else
