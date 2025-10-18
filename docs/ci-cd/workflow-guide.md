@@ -191,7 +191,7 @@ test: add unit tests for user service
 
 ### Status Badges
 Check README for current build status:
-- ![Build Status](https://img.shields.io/github/workflow/status/opensoft/dartwing-app/CI)
+- ![Build Status](https://img.shields.io/github/actions/workflow/status/opensoft/dartwing-app/ci.yml?branch=main)
 - ![Test Coverage](https://img.shields.io/codecov/c/github/opensoft/dartwing-app)
 
 ### Performance
