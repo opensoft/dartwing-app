@@ -18,37 +18,11 @@ jobs:
     timeout-minutes: 10
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        # Don't fail if submodules can't be checked out
-        submodules: false
-        token: ${{ github.token }}
-    
-    - name: Try to checkout submodules
-      continue-on-error: true
-      run: |
-        echo "Attempting to checkout submodules..."
-        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
-          echo "Using SUBMODULE_TOKEN for authentication"
-          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
-        fi
-        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Verify dependencies
       run: flutter pub deps
@@ -72,36 +46,11 @@ jobs:
     timeout-minutes: 15
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        submodules: false
-        token: ${{ github.token }}
-    
-    - name: Try to checkout submodules
-      continue-on-error: true
-      run: |
-        echo "Attempting to checkout submodules..."
-        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
-          echo "Using SUBMODULE_TOKEN for authentication"
-          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
-        fi
-        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Run tests with coverage
       run: flutter test --coverage --reporter=expanded
@@ -140,36 +89,11 @@ jobs:
             profile: "pixel_xl"
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        submodules: false
-        token: ${{ github.token }}
-    
-    - name: Try to checkout submodules
-      continue-on-error: true
-      run: |
-        echo "Attempting to checkout submodules..."
-        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
-          echo "Using SUBMODULE_TOKEN for authentication"
-          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
-        fi
-        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Enable KVM group perms
       run: |
@@ -297,33 +221,11 @@ jobs:
         build-type: [debug, release]
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        submodules: false
-        token: ${{ github.token }}
-    
-    - name: Try to checkout submodules
-      continue-on-error: true
-      run: |
-        echo "Attempting to checkout submodules..."
-        if [ -n "${{ secrets.SUBMODULE_TOKEN }}" ]; then
-          echo "Using SUBMODULE_TOKEN for authentication"
-          git config --global url."https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@farheapsolutions.visualstudio.com/".insteadOf "https://farheapsolutions.visualstudio.com/"
-        fi
-        git submodule update --init --recursive || echo "⚠️ Submodule checkout failed (expected without access token)"
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Check submodule status
       id: submodule-check
@@ -336,9 +238,6 @@ jobs:
           echo "⚠️ Submodule dart_wing is not available - this is expected for PRs without submodule access"
           echo "submodule_available=false" >> $GITHUB_OUTPUT
         fi
-    
-    - name: Install dependencies
-      run: flutter pub get
     
     - name: Build debug APK
       if: matrix.build-type == 'debug' && steps.submodule-check.outputs.submodule_available == 'true'
@@ -388,12 +287,107 @@ jobs:
           cat build/app/outputs/flutter-apk/build-skipped-${{ matrix.build-type }}.txt
         fi
 
-  # Stage 5: Results Summary
+  # Stage 5: Docker Image Build & Publish to GHCR
+  docker-publish:
+    name: Build & Publish Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    # Only run on main/develop branches or when explicitly requested
+    if: |
+      (github.ref == 'refs/heads/main' ||
+       github.ref == 'refs/heads/develop' ||
+       contains(github.event.head_commit.message, '[docker]')) &&
+      needs.build.conclusion == 'success'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download debug APK artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dartwing-debug-apk
+        path: build/app/outputs/flutter-apk/
+      continue-on-error: true
+
+    - name: Download release APK artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dartwing-release-apk
+        path: build/app/outputs/flutter-apk/
+      continue-on-error: true
+
+    - name: Verify APK files
+      run: |
+        echo "Checking downloaded APK files..."
+        ls -lh build/app/outputs/flutter-apk/
+
+        if [ ! -f build/app/outputs/flutter-apk/dartwing-debug.apk ] && [ ! -f build/app/outputs/flutter-apk/dartwing-release-unsigned.apk ]; then
+          echo "❌ No APK files found - cannot build Docker image"
+          exit 1
+        else
+          echo "✅ APK files found"
+        fi
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}/dartwing-apk
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+        labels: |
+          org.opencontainers.image.title=Dartwing APK Package
+          org.opencontainers.image.description=Container image containing Dartwing Android APK builds
+          org.opencontainers.image.vendor=Dartwing Project
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+
+    - name: Image digest
+      run: |
+        echo "Docker image published successfully!"
+        echo "Image tags: ${{ steps.meta.outputs.tags }}"
+        echo ""
+        echo "To pull the image:"
+        echo "  docker pull ghcr.io/${{ github.repository }}/dartwing-apk:latest"
+        echo ""
+        echo "To extract APKs from the image:"
+        echo "  docker run --rm -v \$(pwd):/output ghcr.io/${{ github.repository }}/dartwing-apk:latest sh -c 'cp /apks/*/*.apk /output/ 2>/dev/null || true'"
+
+  # Stage 6: Results Summary
   results:
     name: Results Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [code-quality, test, integration-test, build]
+    needs: [code-quality, test, integration-test, build, docker-publish]
     
     steps:
     - name: Check results
@@ -428,11 +422,23 @@ jobs:
         else
           echo "❌ Build: Failed" >> $GITHUB_STEP_SUMMARY
         fi
-        
+
+        if [ "${{ needs.docker-publish.result }}" == "success" ]; then
+          echo "✅ Docker Image: Published to GHCR" >> $GITHUB_STEP_SUMMARY
+        elif [ "${{ needs.docker-publish.result }}" == "skipped" ]; then
+          echo "⏭️ Docker Image: Skipped" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Docker Image: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Artifacts Available:" >> $GITHUB_STEP_SUMMARY
         echo "- Debug APK: dartwing-debug-apk" >> $GITHUB_STEP_SUMMARY
         echo "- Release APK: dartwing-release-apk" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ needs.docker-publish.result }}" == "success" ]; then
+          echo "- Docker Image: ghcr.io/${{ github.repository }}/dartwing-apk:latest" >> $GITHUB_STEP_SUMMARY
+        fi
         
         # Set overall status - consider build success OR acceptable skip
         BUILD_OK=false

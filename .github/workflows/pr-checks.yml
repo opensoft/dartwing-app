@@ -22,26 +22,12 @@ jobs:
     if: github.event.pull_request.draft == false
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        # Fetch more history for better analysis
-        fetch-depth: 0
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        fetch-depth: 0
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Check formatting
       run: |
@@ -75,23 +61,11 @@ jobs:
     if: github.event.pull_request.draft == false
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Run unit tests
       run: |
@@ -120,23 +94,11 @@ jobs:
     if: false  # Temporarily disabled - dart_wing submodule not available
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Build debug APK
       run: |
@@ -153,17 +115,11 @@ jobs:
     if: github.event.pull_request.draft == false
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+    - name: Prepare Flutter environment
+      uses: ./.github/actions/flutter-setup
       with:
-        channel: stable
-        cache: true
-    
-    - name: Install dependencies
-      run: flutter pub get
+        java-version: ${{ env.JAVA_VERSION }}
+        submodule-token: ${{ secrets.SUBMODULE_TOKEN }}
     
     - name: Check for outdated dependencies
       run: |
