@@ -191,6 +191,12 @@ To test the Docker image build locally:
 # First, build the APKs (requires Flutter setup)
 flutter build apk --debug
 flutter build apk --release
+
+# NOTE: The APK filenames may vary depending on your Flutter version and project configuration.
+# Check the output directory for the actual APK filenames:
+ls build/app/outputs/flutter-apk/
+
+# Adjust the following commands if your APK filenames differ.
 mv build/app/outputs/flutter-apk/app-debug.apk build/app/outputs/flutter-apk/dartwing-debug.apk
 mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/dartwing-release-unsigned.apk
 
