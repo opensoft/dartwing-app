@@ -78,13 +78,13 @@ To create a Personal Access Token (PAT):
 
 ```bash
 # Pull latest image
-docker pull ghcr.io/{your-org}/dartwing/dartwing-apk:latest
+docker pull ghcr.io/{your-org}/{repo}/dartwing-apk:latest
 
 # Pull specific branch
-docker pull ghcr.io/{your-org}/dartwing/dartwing-apk:develop
+docker pull ghcr.io/{your-org}/{repo}/dartwing-apk:develop
 
 # Pull specific commit
-docker pull ghcr.io/{your-org}/dartwing/dartwing-apk:main-abc123
+docker pull ghcr.io/{your-org}/{repo}/dartwing-apk:main-abc123
 ```
 
 ## Extracting APKs from Image
