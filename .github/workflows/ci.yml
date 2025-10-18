@@ -279,10 +279,10 @@ jobs:
     - name: APK file info
       run: |
         ls -la build/app/outputs/flutter-apk/
-        if [ -f "build/app/outputs/flutter-apk/dartwing-${{ matrix.build-type }}"*.apk ]; then
+        if [ -f build/app/outputs/flutter-apk/dartwing-${{ matrix.build-type }}*.apk ]; then
           echo "APK build successful:"
           file build/app/outputs/flutter-apk/dartwing-${{ matrix.build-type }}*.apk
-        elif [ -f "build/app/outputs/flutter-apk/build-skipped-${{ matrix.build-type }}.txt" ]; then
+        elif [ -f build/app/outputs/flutter-apk/build-skipped-${{ matrix.build-type }}.txt ]; then
           echo "APK build was skipped:"
           cat build/app/outputs/flutter-apk/build-skipped-${{ matrix.build-type }}.txt
         fi
