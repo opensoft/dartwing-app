@@ -78,8 +78,8 @@ jobs:
         if [ -f "coverage/lcov.info" ]; then
           echo "✅ Coverage report generated"
           # Simple coverage check - more sophisticated tools can be added later
-          lines_covered=$(grep -c "LF:" coverage/lcov.info || echo "0")
-          echo "Lines covered: $lines_covered"
+          coverage_percent=$(awk -F: '/^LH:/{hit+=$2} /^LF:/{found+=$2} END{if(found>0) printf("%.2f", (hit/found)*100); else print "0"}' coverage/lcov.info)
+          echo "Test coverage: $coverage_percent%"
           echo "✅ Coverage check completed"
         else
           echo "⚠️ No coverage report found - this is expected for CI without submodule dependencies"
