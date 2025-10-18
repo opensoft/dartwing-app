@@ -288,6 +288,11 @@ class _TestFormAppState extends State<TestFormApp> {
   final _emailController = TextEditingController();
   String _validationMessage = '';
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
   void _validateEmail() {
     final email = _emailController.text;
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
