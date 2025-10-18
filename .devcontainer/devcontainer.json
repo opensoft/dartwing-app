@@ -1,8 +1,8 @@
 {
-  "name": "dartwing Flutter Dev",
-  "dockerComposeFile": "docker-compose.yml",
+  "name": "DartWing App",
+  "dockerComposeFile": "docker-compose-with-adb.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   "overrideCommand": false,
 
@@ -21,6 +21,8 @@
     "flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'",
     "adb devices && echo '✅ ADB service connected' || echo '🔄 ADB service connecting...'",
     "timeout 300 .devcontainer/scripts/setup-flutter-project.sh && echo '✅ Flutter project setup complete' || echo '🔄 Flutter setup running in background...'",
+    "flutter doctor -v",
+    "flutter pub get",
     "echo '🎯 Ready for development!'"
   ],
 
@@ -34,17 +36,56 @@
         "ms-azuretools.vscode-docker",
         "ms-vscode.vscode-json",
         "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "github.vscode-pull-request-github",
+        "github.vscode-github-actions",
+        "github.copilot"
       ],
       "settings": {
-        "dart.flutterSdkPath": "/flutter",
+        "dart.flutterSdkPath": "/opt/flutter",
         "dart.debugExternalLibraries": true,
         "dart.debugSdkLibraries": false,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll": "explicit"
-        }
+        },
+        "dart.showTodos": true,
+        "dart.analysisExcludedFolders": [
+          ".dart_tool",
+          "build"
+        ],
+        "files.exclude": {
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/build": true,
+          "**/.dart_tool": true
+        },
+        "dart.enableSdkFormatter": true,
+        "dart.lineLength": 80,
+        "dart.warnWhenEditingFilesOutsideWorkspace": true,
+        "dart.flutterCreateAndroidLanguage": "kotlin",
+        "dart.flutterCreateIOSLanguage": "swift",
+        "terminal.integrated.shell.linux": "/bin/zsh"
       }
     }
-  }
+  },
+  "containerEnv": {
+    "FLUTTER_ROOT": "/opt/flutter",
+    "ANDROID_SDK_ROOT": "/opt/android-sdk",
+    "ANDROID_HOME": "/opt/android-sdk",
+    "ADB_SERVER_SOCKET": "tcp:adb-service:5037"
+  },
+  "forwardPorts": [
+    3000,
+    8180,
+    8000,
+    // Note: No port 5037 - container connects to host ADB server
+    5554,  // Emulator console port
+    5555,  // Emulator ADB port
+    42000,
+    42001,
+    42002,
+    42003,
+    42004
+  ]
 }
