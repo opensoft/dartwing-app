@@ -29,7 +29,7 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    avoid_print: false  # Allow print statements for CI/debug purposes
+    avoid_print: true  # Disallow print statements globally; use // ignore: avoid_print in test/debug files if needed
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
 
 # Additional information about this file can be found at
