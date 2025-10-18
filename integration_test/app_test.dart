@@ -209,7 +209,7 @@ void main() {
       // Check if dart_wing submodule is available
       final dartWingDir = Directory('lib/dart_wing');
       final hasSubmodule = await dartWingDir.exists() && 
-          (await dartWingDir.list().length > 0);
+          (await dartWingDir.list().toList()).isNotEmpty;
       
       if (!hasSubmodule) {
         print('⏭️ Skipping app-specific tests - dart_wing submodule not available');
