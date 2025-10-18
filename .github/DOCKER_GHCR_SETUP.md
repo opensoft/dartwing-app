@@ -9,7 +9,7 @@ The CI pipeline automatically builds a Docker image containing the Dartwing APK 
 ## Image Details
 
 - **Registry**: GitHub Container Registry (ghcr.io)
-- **Image Name**: `ghcr.io/{your-org}/dartwing/dartwing-apk`
+- **Image Name**: `ghcr.io/{owner}/{repo}/dartwing-apk`
 - **Visibility**: Private (requires authentication)
 - **Contents**: Debug and Release APK files
 
