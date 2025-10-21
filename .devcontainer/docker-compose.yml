@@ -33,7 +33,7 @@ services:
       - ADB_SERVER_SOCKET=tcp:${ADB_SERVER_HOST:-shared-adb-server}:${ADB_SERVER_PORT:-5037}
       - FLUTTER_VERSION=${FLUTTER_VERSION:-3.24.0}
       - ANDROID_HOME=${ANDROID_HOME:-/home/vscode/android-sdk}
-      - FLUTTER_PUB_CACHE=${FLUTTER_PUB_CACHE:-/home/vscode/.pub-cache}
+      - FLUTTER_PUB_CACHE=${FLUTTER_PUB_CACHE:-/home/${USER_NAME:-vscode}/.pub-cache}
       - DEBUG_MODE=${DEBUG_MODE:-false}
     
     # Network configuration
@@ -44,7 +44,7 @@ services:
     volumes:
       - ../:${WORKSPACE_PATH:-/workspace}
       # Persist pub cache per project
-      - flutter-pub-cache:${FLUTTER_PUB_CACHE:-/home/vscode/.pub-cache}
+      - flutter-pub-cache:/home/${USER_NAME:-vscode}/.pub-cache
       # Persist gradle cache per project
       - flutter-gradle-cache:/home/${USER_NAME:-vscode}/.gradle
     

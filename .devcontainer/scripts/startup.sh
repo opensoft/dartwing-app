@@ -24,6 +24,16 @@ else
     echo -e "${YELLOW}⚠️  Dartwingers service check had issues (this may be normal)${NC}"
 fi
 
+# Step 1.5: Fix pub-cache permissions (prevent root ownership issues)
+echo -e "${BLUE}🔧 Checking .pub-cache permissions...${NC}"
+if [ -d "$HOME/.pub-cache" ] && [ ! -w "$HOME/.pub-cache" ]; then
+    echo -e "${YELLOW}⚠️  Fixing .pub-cache permissions...${NC}"
+    sudo chown -R $(whoami):$(whoami) "$HOME/.pub-cache" 2>/dev/null || echo -e "${YELLOW}⚠️  Could not fix permissions (may be normal)${NC}"
+    echo -e "${GREEN}✅ .pub-cache permissions checked${NC}"
+else
+    echo -e "${GREEN}✅ .pub-cache permissions OK${NC}"
+fi
+
 # Step 2: Check Flutter SDK
 echo -e "${BLUE}🔍 Checking Flutter SDK...${NC}"
 if flutter --version > /dev/null 2>&1; then

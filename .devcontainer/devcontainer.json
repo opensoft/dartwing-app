@@ -1,5 +1,5 @@
 {
-  "name": "${localEnv:PROJECT_NAME}",
+  "name": "${localEnv:PROJECT_NAME}-${localEnv:SERVICE_CONTAINER_SUFFIX}",
   "_devcontainer_version": "1.0.0",
   "_template_version": "flutter-devcontainer-1.0.0",
   "dockerComposeFile": "docker-compose.yml",
