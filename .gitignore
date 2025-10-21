@@ -84,9 +84,6 @@ docker-compose.*.yml
 # DevContainer build cache
 .devcontainer/docker-compose.override.yml
 
-# DevContainer environment files
-.devcontainer/.env
-
 # ====================================
 # Logs
 # ====================================

@@ -1,7 +1,8 @@
 # ====================================
 # Flutter DevContainer Docker Compose Configuration
-# Version: 1.0.0
-# Template: flutter-devcontainer-1.0.0
+# Version: 2.0.0
+# Template: flutter-devcontainer-2.0.0
+# Architecture: Centralized Configuration (.env only)
 # ====================================
 # Compose project name for Docker Desktop grouping (set in .env)
 # This groups all containers under the same stack name
@@ -22,7 +23,7 @@ services:
         DEBUG_MODE: ${DEBUG_MODE:-false}
     
     # Container configuration from .env
-    container_name: ${PROJECT_NAME:-Flutter-Dev}
+    container_name: ${PROJECT_NAME:-Flutter-Dev}-${APP_CONTAINER_SUFFIX:-app}
     
     # Run as user specified in .env with defaults
     user: "${USER_UID:-1000}:${USER_GID:-1000}"
