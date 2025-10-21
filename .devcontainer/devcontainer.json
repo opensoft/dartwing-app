@@ -1,5 +1,5 @@
 {
-  "name": "${localEnv:PROJECT_NAME}-${localEnv:SERVICE_CONTAINER_SUFFIX}",
+  "name": "${localEnv:PROJECT_NAME}",
   "_devcontainer_version": "1.0.0",
   "_template_version": "flutter-devcontainer-1.0.0",
   "dockerComposeFile": "docker-compose.yml",
@@ -22,7 +22,11 @@
   "postAttachCommand": ".devcontainer/scripts/ready-check.sh",
 
   "containerEnv": {
-    "SHELL": "/bin/zsh"
+    "SHELL": "/bin/zsh",
+    "TERM_PROGRAM": "${localEnv:TERM_PROGRAM}",
+    "WARP_HONOR_PS1": "1",
+    "WARP_USE_SSH_WRAPPER": "${localEnv:WARP_USE_SSH_WRAPPER}",
+    "WARP_IS_LOCAL_SHELL_SESSION": "${localEnv:WARP_IS_LOCAL_SHELL_SESSION}"
   },
 
   "customizations": {

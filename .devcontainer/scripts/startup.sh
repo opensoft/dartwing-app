@@ -1,7 +1,7 @@
 #!/bin/bash
 # ====================================
 # DevContainer Startup Script
-# Version: 1.0.0
+# Version: 1.0.1
 # ====================================
 # This script runs when the devcontainer starts up
 # It initializes the Flutter development environment
@@ -24,7 +24,7 @@ else
     echo -e "${YELLOW}⚠️  Dartwingers service check had issues (this may be normal)${NC}"
 fi
 
-# Step 1.5: Fix pub-cache permissions (prevent root ownership issues)
+# Step 2: Fix pub-cache permissions (prevent root ownership issues)
 echo -e "${BLUE}🔧 Checking .pub-cache permissions...${NC}"
 if [ -d "$HOME/.pub-cache" ] && [ ! -w "$HOME/.pub-cache" ]; then
     echo -e "${YELLOW}⚠️  Fixing .pub-cache permissions...${NC}"
@@ -34,7 +34,7 @@ else
     echo -e "${GREEN}✅ .pub-cache permissions OK${NC}"
 fi
 
-# Step 2: Check Flutter SDK
+# Step 3: Check Flutter SDK
 echo -e "${BLUE}🔍 Checking Flutter SDK...${NC}"
 if flutter --version > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Flutter SDK ready${NC}"
@@ -43,7 +43,7 @@ else
     echo -e "${YELLOW}⚠️  Flutter SDK not ready yet${NC}"
 fi
 
-# Step 3: Check ADB connectivity  
+# Step 4: Check ADB connectivity
 echo -e "${BLUE}🔍 Checking ADB connectivity...${NC}"
 if adb devices > /dev/null 2>&1; then
     echo -e "${GREEN}✅ ADB service connected${NC}"
@@ -57,7 +57,7 @@ else
     echo -e "${YELLOW}🔄 ADB service connecting...${NC}"
 fi
 
-# Step 4: Run Flutter project setup
+# Step 5: Run Flutter project setup
 echo -e "${BLUE}🔧 Running Flutter project setup...${NC}"
 if timeout 300 .devcontainer/scripts/setup-flutter-project.sh > /tmp/flutter-setup.log 2>&1; then
     echo -e "${GREEN}✅ Flutter project setup complete${NC}"
@@ -70,7 +70,7 @@ else
     touch /tmp/flutter-setup-errors.log
 fi
 
-# Step 5: Show template version info
+# Step 6: Show template version info
 echo ""
 echo -e "${BLUE}🔍 Template Version Info:${NC}"
 if [ -f ".devcontainer/scripts/version-check.sh" ]; then
