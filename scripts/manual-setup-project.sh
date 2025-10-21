@@ -16,30 +16,30 @@ echo "========================================"
 # ====================================
 # Step 1: Check if .env file exists
 # ====================================
-if [ ! -f .env ]; then
-    echo "⚠️  .env file not found!"
+if [ ! -f .devcontainer/.env ]; then
+    echo "⚠️  .devcontainer/.env file not found!"
     
-    if [ -f .env.example ]; then
-        echo "📋 Creating .env from .env.example..."
-        cp .env.example .env
-        echo "✅ Created .env file"
+    if [ -f .devcontainer/.env.base ]; then
+        echo "📋 Creating .devcontainer/.env from .devcontainer/.env.base..."
+        cp .devcontainer/.env.base .devcontainer/.env
+        echo "✅ Created .devcontainer/.env file"
         echo ""
-        echo "📝 Please edit .env and set the following variables:"
+        echo "📝 Please edit .devcontainer/.env and set the following variables:"
         echo "   - PROJECT_NAME (currently: myproject)"
         echo "   - USER_UID (currently: 1000)"  
         echo "   - USER_GID (currently: 1000)"
         echo ""
         echo "💡 Tip: Run 'id' to check your current UID and GID"
-        echo "💡 Tip: Run this script again after editing .env"
+        echo "💡 Tip: Run this script again after editing .devcontainer/.env"
         exit 1
     else
-        echo "❌ Error: Neither .env nor .env.example found!"
+        echo "❌ Error: Neither .devcontainer/.env nor .devcontainer/.env.base found!"
         echo "This script should be run from a Flutter DevContainer project directory"
         exit 1
     fi
 fi
 
-echo "✅ Found .env file"
+echo "✅ Found .devcontainer/.env file"
 
 # ====================================
 # Step 2: Validate required variables
@@ -58,10 +58,10 @@ MISSING=()
 WARNINGS=()
 
 for VAR in "${REQUIRED_VARS[@]}"; do
-    if ! grep -q "^${VAR}=" .env 2>/dev/null; then
+    if ! grep -q "^${VAR}=" .devcontainer/.env 2>/dev/null; then
         MISSING+=("$VAR")
     else
-        VALUE=$(grep "^${VAR}=" .env | cut -d'=' -f2)
+        VALUE=$(grep "^${VAR}=" .devcontainer/.env | cut -d'=' -f2)
         if [ -z "$VALUE" ] || [ "$VALUE" = "myproject" ]; then
             if [ "$VAR" = "PROJECT_NAME" ] && [ "$VALUE" = "myproject" ]; then
                 WARNINGS+=("$VAR is still set to default value: $VALUE")
@@ -76,10 +76,10 @@ done
 # Step 3: Report validation results
 # ====================================
 if [ ${#MISSING[@]} -gt 0 ]; then
-    echo "❌ Missing or empty required variables in .env:"
+    echo "❌ Missing or empty required variables in .devcontainer/.env:"
     printf '   - %s\n' "${MISSING[@]}"
     echo ""
-    echo "📝 Please edit .env and set these variables"
+    echo "📝 Please edit .devcontainer/.env and set these variables"
     exit 1
 fi
 
@@ -89,19 +89,19 @@ if [ ${#WARNINGS[@]} -gt 0 ]; then
     echo ""
 fi
 
-echo "✅ All required variables found in .env"
+echo "✅ All required variables found in .devcontainer/.env"
 
 # ====================================
 # Step 4: Validate specific values
 # ====================================
 echo "🔍 Validating variable values..."
 
-# Get values from .env
-PROJECT_NAME=$(grep '^PROJECT_NAME=' .env | cut -d'=' -f2)
-USER_NAME=$(grep '^USER_NAME=' .env | cut -d'=' -f2)
-USER_UID=$(grep '^USER_UID=' .env | cut -d'=' -f2)
-USER_GID=$(grep '^USER_GID=' .env | cut -d'=' -f2)
-FLUTTER_VERSION=$(grep '^FLUTTER_VERSION=' .env | cut -d'=' -f2)
+# Get values from .devcontainer/.env
+PROJECT_NAME=$(grep '^PROJECT_NAME=' .devcontainer/.env | cut -d'=' -f2)
+USER_NAME=$(grep '^USER_NAME=' .devcontainer/.env | cut -d'=' -f2)
+USER_UID=$(grep '^USER_UID=' .devcontainer/.env | cut -d'=' -f2)
+USER_GID=$(grep '^USER_GID=' .devcontainer/.env | cut -d'=' -f2)
+FLUTTER_VERSION=$(grep '^FLUTTER_VERSION=' .devcontainer/.env | cut -d'=' -f2)
 
 # Validate PROJECT_NAME (no spaces, no special chars)
 if [[ ! "$PROJECT_NAME" =~ ^[a-zA-Z0-9_-]+$ ]]; then
@@ -130,10 +130,10 @@ CURRENT_GID=$(id -g)
 
 if [ "$USER_UID" != "$CURRENT_UID" ] || [ "$USER_GID" != "$CURRENT_GID" ]; then
     echo "⚠️  User ID mismatch detected:"
-    echo "   .env UID:GID = $USER_UID:$USER_GID"
+    echo "   .devcontainer/.env UID:GID = $USER_UID:$USER_GID"
     echo "   Your UID:GID = $CURRENT_UID:$CURRENT_GID" 
     echo ""
-    echo "💡 For best file permissions, consider updating .env:"
+    echo "💡 For best file permissions, consider updating .devcontainer/.env:"
     echo "   USER_UID=$CURRENT_UID"
     echo "   USER_GID=$CURRENT_GID"
     echo ""

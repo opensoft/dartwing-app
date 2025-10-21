@@ -1,5 +1,5 @@
 {
-  "name": "dartwing",
+  "name": "${localEnv:PROJECT_NAME}",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -7,35 +7,21 @@
   "overrideCommand": false,
 
   "initializeCommand": {
-    "set-project-name": "bash -c 'source .devcontainer/.env && PROJECT_NAME=${PROJECT_NAME:-myproject}; sed -i \"s/dartwing/$PROJECT_NAME/g\" ${localWorkspaceFolder}/.devcontainer/devcontainer.json'",
-    "ensure-adb-infrastructure": "bash -c 'if docker ps --format \"table {{.Names}}\" | grep -q \"^shared-adb-server$\"; then echo \"✅ ADB server already running\"; else echo \"🔧 ADB server not found - will attempt to start infrastructure...\"; docker compose -p infrastructure -f ../../../infrastructure/mobile/android/adb/docker-compose.yml up -d 2>/dev/null || echo \"⚠️ No ADB infrastructure available - manual setup may be required\"; fi'"
+    "set-project-name": "bash -c 'PROJECT_NAME=${PROJECT_NAME:-Flutter-Dev}; sed -i \"s/Flutter-Dev/$PROJECT_NAME/g\" ${localWorkspaceFolder}/.devcontainer/devcontainer.json'",
+    "adb": "bash -c 'source .devcontainer/.env && ADB_INFRASTRUCTURE_PROJECT_NAME=$ADB_INFRASTRUCTURE_PROJECT_NAME ${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh'",
+    "dartwingers-check": "${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/check-dartwingers-service.sh"
   },
 
   "onCreateCommand": {
-    "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'",
-    "check-ssh-setup": "bash -c 'if [ -d ~/.ssh ] && [ -n \"$(ls ~/.ssh/*.pub 2>/dev/null)\" ]; then echo \"✅ SSH keys found\"; chmod 700 ~/.ssh && chmod 600 ~/.ssh/* 2>/dev/null || true; else echo \"🔑 No SSH keys found - you may need to generate them:\"; echo \"  ssh-keygen -t ed25519 -C your-email@example.com\"; echo \"  Then add the public key to GitHub\"; fi'",
-    "setup-git": "git config --global --add safe.directory /workspace"
+    "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'"
   },
 
-  "postStartCommand": "echo '🚀 Container started - initializing Flutter environment...'; echo '🔧 Ensuring Dartwingers service dependency...' && ../../../infrastructure/mobile/android/adb/scripts/start-dartwingers-service-if-needed-minimal.sh; flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'; adb devices && echo '✅ ADB service connected' || echo '🔄 ADB service connecting...'; timeout 300 .devcontainer/scripts/setup-flutter-project.sh && echo '✅ Flutter project setup complete' || echo '🔄 Flutter setup running in background...'; echo '🎯 Ready for development!'",
+"postStartCommand": "echo '🚀 Container started - initializing Flutter environment...'; echo '🔧 Ensuring Dartwingers service dependency...' && ../../../infrastructure/mobile/android/adb/scripts/start-dartwingers-service-if-needed-minimal.sh; flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'; adb devices && echo '✅ ADB service connected' || echo '🔄 ADB service connecting...'; timeout 300 .devcontainer/scripts/setup-flutter-project.sh && echo '✅ Flutter project setup complete' || echo '🔄 Flutter setup running in background...'; echo ''; echo '🔍 Template Version Info:'; .devcontainer/scripts/version-check.sh | head -10; echo '🎯 Ready for development!'"
 
   "postAttachCommand": ".devcontainer/scripts/ready-check.sh",
 
   "containerEnv": {
     "SHELL": "/bin/zsh"
-  },
-
-  "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.config/gh,target=/home/${localEnv:USER}/.config/gh,type=bind,consistency=cached"
-  ],
-
-  "remoteEnv": {
-    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
-  },
-
-  "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
   "customizations": {
@@ -44,7 +30,8 @@
         "Dart-Code.dart-code",
         "Dart-Code.flutter",
         "ms-azuretools.vscode-docker",
-        "GitHub.vscode-github-actions"
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
         "dart.flutterSdkPath": "/flutter",
@@ -55,18 +42,9 @@
           "source.fixAll": "explicit"
         },
         "terminal.integrated.shell.linux": "/bin/zsh",
-        "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.automationProfile.linux": {
           "path": "/bin/zsh",
           "args": ["-l"]
-        },
-        "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "/bin/zsh"
-          },
-          "zsh": {
-            "path": "/bin/zsh"
-          }
         }
       }
     }
