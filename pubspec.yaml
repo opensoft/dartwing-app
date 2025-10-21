@@ -7,15 +7,15 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.2
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.6.0
 
 dependencies:
   flutter:
     sdk: flutter
   crypto: ^3.0.6
   json_annotation: ^4.9.0
-  intl: ^0.20.2
-  mobile_scanner: ^7.0.1
+  intl: 0.19.0
+  mobile_scanner: ^6.0.11
   easy_localization: ^3.0.7+1
   loader_overlay: ^5.0.0
   loading_overlay: ^0.4.2 # Replace it to loader_overlay
@@ -41,7 +41,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0
+  flutter_lints: ^5.0.0
   build_runner: ^2.4.15
   json_serializable: ^6.9.5
 
