@@ -31,6 +31,16 @@
       ]
     },
     {
+      "name": "Run Existing Debug APK",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": [
+        "--use-application-binary=build/app/outputs/flutter-apk/app-debug.apk"
+      ],
+      "noDebug": true
+    },
+    {
       "name": "Debug Flutter Test",
       "request": "launch",
       "type": "dart",

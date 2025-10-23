@@ -27,51 +27,35 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   bool _loadingOverlayEnabled = false;
-  bool _isRefreshTokenStarted = false;
-
-  //String _redirectUrl = "http://localhost:3000";
-  String _redirectUrl = "https://app-dev.ledgerlinc.com";
-
-  Future<void> _refreshToken() {
-    return DartWingAppGlobals.keycloakWrapper
-        .exchangeTokens(const Duration(days: 60))
-        .then((_) {
-          _isRefreshTokenStarted = true;
-        });
-  }
+  bool _hasLoadedSession = false;
+  StreamSubscription<bool>? _authSubscription;
+  bool _isUpdatingSession = false;
 
   Future<bool> _logout() {
     if (kIsWeb) {
       return Future.value(false); // TODO: ADDWEB
     }
-    return DartWingAppGlobals.keycloakWrapper.logout().then((success) {
-      DartWingAppGlobals.keycloakWrapper.tokenResponse = null;
-      return success;
-    });
+    _hasLoadedSession = false;
+    NetworkClients.dartWingRestClient.token = "";
+    NetworkClients.frappeRestClient.token = "";
+    return DartWingAppGlobals.authService.logout();
   }
 
-  Future<bool> _login() {
+  Future<bool> _login() async {
     if (kIsWeb) {
-      // TODO: ADDWEB
+      return false; // TODO: ADDWEB
     }
     setState(() {
       _loadingOverlayEnabled = true;
     });
-    if (!DartWingAppGlobals.keycloakWrapper.isInitialized) {
-      DartWingAppGlobals.keycloakWrapper.initialize();
-    }
-    if (DartWingAppGlobals.keycloakWrapper.accessToken == null) {
-      return DartWingAppGlobals.keycloakWrapper.login().then((success) {
-        if (!success) {
-          setState(() {
-            _loadingOverlayEnabled = false;
-          });
-        }
-        return success;
+    _hasLoadedSession = false;
+    final success = await DartWingAppGlobals.authService.login();
+    if (!success && mounted) {
+      setState(() {
+        _loadingOverlayEnabled = false;
       });
-    } else {
-      return _updateTokenAndUserInfo();
     }
+    return success;
   }
 
   Future<bool> _goToHomePage() {
@@ -95,152 +79,178 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         });
   }
 
-  void _autologinIfPossible() {
-    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
-      return;
+  Future<bool> _updateTokenAndUserInfo() async {
+    if (_isUpdatingSession) {
+      return true;
     }
-    Future<bool> future = Future<bool>.value(false);
-    if (kIsWeb) {
-    } else {
-      future = Future.value(
-        DartWingAppGlobals.keycloakWrapper.accessToken == null
-            ? false
-            : DartWingAppGlobals.keycloakWrapper.accessToken!.isNotEmpty,
-      );
-    }
-    future.then((valid) {
-      if (valid) {
-        _updateTokenAndUserInfo();
-      }
-    });
-  }
-
-  Future<bool> _updateTokenAndUserInfo() {
+    _isUpdatingSession = true;
     setState(() {
       _loadingOverlayEnabled = true;
     });
-    return DartWingAppGlobals.keycloakWrapper
-        .getUserInfo()
-        .then((userInfo) {
-          Globals.applicationInfo.username =
-              userInfo != null && userInfo.containsKey('name')
-              ? userInfo['name']
-              : '';
-          Globals.applicationInfo.userEmail =
-              userInfo != null && userInfo.containsKey('email')
-              ? userInfo['email']
-              : '';
+    final auth = DartWingAppGlobals.authService;
+    try {
+      Map<String, dynamic>? userInfo =
+          await auth.getUserInfo() ?? auth.idClaims;
 
-          String userId = Globals.applicationInfo.userEmail;
-          if (userId.isEmpty && Globals.applicationInfo.username.isNotEmpty) {
-            userId = Globals.applicationInfo.username
-                .replaceAll(' ', '.')
-                .toLowerCase();
-          }
-          Globals.applicationInfo.deviceId =
-              "${kIsWeb ? "web" : Platform.operatingSystem.toLowerCase()}-$userId";
-        })
-        .then((_) {
-          return NetworkClients.init(
-            token: DartWingAppGlobals.keycloakWrapper.accessToken,
-          );
-        })
-        .then((_) {
-          PaperTrailClient.sendInfoMessageToPaperTrail(
-            "Token ${DartWingAppGlobals.keycloakWrapper.accessToken.toString()}",
-          );
-          PaperTrailClient.sendInfoMessageToPaperTrail(
-            "New Token expires in ${DateTime.fromMillisecondsSinceEpoch(DartWingAppGlobals.keycloakWrapper.tokenResponse!.accessTokenExpirationDateTime!.millisecondsSinceEpoch)}",
-          );
-          return NetworkClients.dartWingApi.fetchUser();
+      Globals.applicationInfo.username =
+          userInfo != null && userInfo.containsKey('name')
+          ? userInfo['name'] as String
+          : userInfo != null && userInfo.containsKey('preferred_username')
+          ? userInfo['preferred_username'] as String
+          : '';
+      Globals.applicationInfo.userEmail =
+          userInfo != null && userInfo.containsKey('email')
+          ? userInfo['email'] as String
+          : '';
 
-          Navigator.of(
-            context,
-          ).pushNamed(DartWingAppsRouters.addUserInfoPage).then((result) {
-            if (result == null) {
-              return _logout();
-            } else {
-              return Navigator.of(context).pushNamed(
-                DartWingAppsRouters.homePage,
-                arguments: "Some organization",
-              );
-            }
-          });
-        })
-        .catchError((e) {
-          return Navigator.of(
-            context,
-          ).pushNamed(DartWingAppsRouters.addUserInfoPage).then((result) {
-            return result == null ? Globals.user : result as User;
-          });
-        })
-        .then((user) {
-          Globals.user = user;
-          setState(() {
-            _loadingOverlayEnabled = false;
-          });
-          if (ModalRoute.of(context)!.isCurrent && user.email.isNotEmpty) {
-            _goToHomePage();
-          }
-          return true;
-        })
-        .catchError((e) {
-          //_logout();
-          setState(() {
-            _loadingOverlayEnabled = false;
-          });
-          if ((e is! CancelLoginException) && (e is! PlatformException)) {
-            showWarningNotification(context, e.toString());
-          }
-          if (ModalRoute.of(context)!.isCurrent) {
-            setState(() {});
-          }
-          return false;
-        });
+      String userId = Globals.applicationInfo.userEmail;
+      if (userId.isEmpty && Globals.applicationInfo.username.isNotEmpty) {
+        userId = Globals.applicationInfo.username
+            .replaceAll(' ', '.')
+            .toLowerCase();
+      }
+      Globals.applicationInfo.deviceId =
+          "${kIsWeb ? "web" : Platform.operatingSystem.toLowerCase()}-$userId";
+
+      await NetworkClients.init(token: auth.accessToken);
+
+      if (auth.accessToken != null) {
+        PaperTrailClient.sendInfoMessageToPaperTrail(
+          "Token ${auth.accessToken}",
+        );
+      }
+      if (auth.accessTokenExpiration != null) {
+        PaperTrailClient.sendInfoMessageToPaperTrail(
+          "New Token expires in ${auth.accessTokenExpiration}",
+        );
+      }
+
+      User user;
+      try {
+        user = await NetworkClients.dartWingApi.fetchUser();
+      } catch (_) {
+        user = await _launchUserProfileSetup();
+      }
+
+      Globals.user = user;
+      _hasLoadedSession = true;
+
+      if (!mounted) {
+        return true;
+      }
+
+      setState(() {
+        _loadingOverlayEnabled = false;
+      });
+
+      if ((ModalRoute.of(context)?.isCurrent ?? false) &&
+          user.email.isNotEmpty) {
+        await _goToHomePage();
+      }
+      return true;
+    } catch (e) {
+      _hasLoadedSession = false;
+      if (!mounted) {
+        return false;
+      }
+      setState(() {
+        _loadingOverlayEnabled = false;
+      });
+      if ((e is! CancelLoginException) && (e is! PlatformException)) {
+        showWarningNotification(context, e.toString());
+      }
+      if (ModalRoute.of(context)?.isCurrent ?? false) {
+        setState(() {});
+      }
+      return false;
+    } finally {
+      _isUpdatingSession = false;
+    }
+  }
+
+  Future<User> _launchUserProfileSetup() async {
+    if (!mounted) {
+      return Globals.user;
+    }
+    final result = await Navigator.of(
+      context,
+    ).pushNamed(DartWingAppsRouters.addUserInfoPage);
+    if (result is User) {
+      return result;
+    }
+    return Globals.user;
   }
 
   @override
   void initState() {
-    if (!DartWingAppGlobals.keycloakWrapper.isInitialized) {
-      DartWingAppGlobals.keycloakWrapper.initialize();
-    }
-    NetworkClients.init(token: DartWingAppGlobals.keycloakWrapper.accessToken);
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      //_autologinIfPossible();
-    });
+    NetworkClients.init(token: DartWingAppGlobals.authService.accessToken);
 
-    DartWingAppGlobals.keycloakWrapper.authenticationStream.listen((success) {
-      if (!success ||
-          DartWingAppGlobals.keycloakWrapper.accessToken == null ||
-          DartWingAppGlobals.keycloakWrapper.accessToken!.isEmpty) {
+    _authSubscription = DartWingAppGlobals.authService.authenticationStream
+        .listen((success) {
+          if (!success ||
+              DartWingAppGlobals.authService.accessToken == null ||
+              DartWingAppGlobals.authService.accessToken!.isEmpty) {
+            return;
+          }
+          _handleAuthenticatedEvent();
+        });
+
+    DartWingAppGlobals.authService.onError = (message, error, stackTrace) {
+      PaperTrailClient.sendWarningMessageToPaperTrail(message);
+      if (!mounted) {
         return;
       }
-      if (_isRefreshTokenStarted) {
-        _updateTokenAndUserInfo();
-        _isRefreshTokenStarted = false;
-      } else {
-        _refreshToken();
-      }
-    });
-    DartWingAppGlobals.keycloakWrapper.onError = (message, error, stackTrace) {
-      PaperTrailClient.sendWarningMessageToPaperTrail(message);
       setState(() {
         _loadingOverlayEnabled = false;
       });
     };
-  }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    //_autologinIfPossible();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _bootstrapSession();
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _authSubscription?.cancel();
     super.dispose();
+  }
+
+  Future<void> _bootstrapSession() async {
+    final auth = DartWingAppGlobals.authService;
+    if (auth.accessToken != null && !_hasLoadedSession) {
+      await _updateTokenAndUserInfo();
+    }
+  }
+
+  void _updateRestClientsToken() {
+    final token = DartWingAppGlobals.authService.accessToken;
+    if (token != null && token.isNotEmpty) {
+      NetworkClients.dartWingRestClient.token = token;
+      NetworkClients.frappeRestClient.token = token;
+    }
+  }
+
+  Future<void> _handleAuthenticatedEvent() async {
+    _updateRestClientsToken();
+    if (_hasLoadedSession) {
+      final auth = DartWingAppGlobals.authService;
+      if (auth.accessToken != null) {
+        PaperTrailClient.sendInfoMessageToPaperTrail(
+          "Refreshed token ${auth.accessToken}",
+        );
+      }
+      if (auth.accessTokenExpiration != null) {
+        PaperTrailClient.sendInfoMessageToPaperTrail(
+          "Token now expires in ${auth.accessTokenExpiration}",
+        );
+      }
+      return;
+    }
+    await _updateTokenAndUserInfo();
   }
 
   @override

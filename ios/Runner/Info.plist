@@ -65,6 +65,7 @@
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+                <string>com.opensoft.dartwing</string>
             </array>
         </dict>
     </array>

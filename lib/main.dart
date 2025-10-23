@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dart_wing_mobile/dart_wing_apps_routers.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -12,10 +13,18 @@ import 'dart_wing/network/network_clients.dart';
 import 'dart_wing/network/paper_trail.dart';
 import 'dart_wing_mobile_global.dart';
 
-void main() async {
-  runZonedGuarded(() {
+void main() {
+  runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    DartWingAppGlobals.keycloakWrapper.initialize();
+    try {
+      await DartWingAppGlobals.authService.initialize();
+    } catch (error, stackTrace) {
+      PaperTrailClient.sendWarningMessageToPaperTrail(
+        'Auth init failed: $error',
+      );
+      debugPrint('Auth init failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -23,21 +32,18 @@ void main() async {
       ),
     );
 
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-        .then((value) {
-          return EasyLocalization.ensureInitialized();
-        })
-        .then((_) {
-          runApp(
-            EasyLocalization(
-              supportedLocales: const [Locale('en'), Locale('de')],
-              path: 'lib/dart_wing/localization',
-              useFallbackTranslations: true,
-              fallbackLocale: const Locale('en'),
-              child: const MyApp(),
-            ),
-          );
-        });
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    await EasyLocalization.ensureInitialized();
+
+    runApp(
+      EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('de')],
+        path: 'lib/dart_wing/localization',
+        useFallbackTranslations: true,
+        fallbackLocale: const Locale('en'),
+        child: const MyApp(),
+      ),
+    );
   }, (e, s) => PaperTrailClient.sendWarningMessageToPaperTrail(e.toString()));
 
   Globals.applicationInfo.appName = 'DartWing-Mobile';
