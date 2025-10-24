@@ -49,7 +49,6 @@ flutter:
 
   uses-material-design: true
 
-  # assets:
-    # Temporarily disabled - dart_wing submodule not available in CI
-    # - lib/dart_wing/gui/images/
-    # - lib/dart_wing/localization/
+  assets:
+    - lib/dart_wing/gui/images/
+    - lib/dart_wing/localization/
