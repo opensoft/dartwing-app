@@ -9,14 +9,22 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'auth_config.dart';
 
 class AuthService {
-  AuthService({required this.config});
+  AuthService({required AuthConfig config}) : _config = config;
 
-  final AuthConfig config;
+  AuthConfig _config;
   final FlutterAppAuth _appAuth = const FlutterAppAuth();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   final StreamController<bool> _authStateController =
       StreamController<bool>.broadcast();
+
+  // Getter for config
+  AuthConfig get config => _config;
+
+  // Method to update auth config at runtime
+  void updateAuthConfig(AuthConfig newConfig) {
+    _config = newConfig;
+  }
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
