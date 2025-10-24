@@ -1,6 +1,29 @@
 # Flutter DevContainer Template
 
-This template provides a **lightweight Flutter project container** with shared ADB infrastructure support.
+This template provides a **lightweight Flutter project container** with **centralized configuration** and shared ADB infrastructure support.
+
+## ⚙️ Centralized Configuration Architecture
+
+**Key Principle: The `.env` file is the ONLY place for project and user-specific configuration.**
+
+### What This Means:
+- 🚫 **Template files are NEVER modified** - All `.devcontainer`, `.vscode`, Docker files remain untouched
+- ✅ **All customization via `.env` file** - Container names, user settings, versions, ports
+- ✅ **Perfect reusability** - Same template works for unlimited projects
+- ✅ **Conflict-free updates** - Template improvements never break your settings
+- ✅ **Configurable container naming** - Control both app and service container names
+
+### Container Naming Examples:
+```bash
+# .env file:
+PROJECT_NAME=dartwing
+APP_CONTAINER_SUFFIX=app
+SERVICE_CONTAINER_SUFFIX=gateway
+
+# Results in containers:
+# - dartwing-app (Flutter container)
+# - dartwing-gateway (Service container)
+```
 
 ## 🎯 Container Philosophy
 
@@ -126,7 +149,10 @@ cp .env.example .env
 ### Key Variables
 
 #### **Project Configuration**
-- `PROJECT_NAME`: Container name, volume names (e.g., `myapp-dev`)
+- `PROJECT_NAME`: Base name for containers and volumes
+- `APP_CONTAINER_SUFFIX`: Suffix for app container (default: `app`) → Results in `PROJECT_NAME-app`
+- `SERVICE_CONTAINER_SUFFIX`: Suffix for service container (default: `service`, `gateway` for Dartwing) → Results in `PROJECT_NAME-service`
+- `COMPOSE_PROJECT_NAME`: Docker Compose stack name (default: `flutter`, `dartwingers` for Dartwingers projects)
 - `NETWORK_NAME`: Docker network (default: `dartnet`)
 
 #### **User Configuration**
@@ -205,12 +231,13 @@ projects/
 - 3 levels deep: `../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh`
 - 4 levels deep: `../../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh`
 
-### Customization Placeholders
+### Template Files Use Environment Variables
 
-Before using, replace these placeholders:
+Template files use environment variable substitution - **no manual editing required**:
 
-- **`PROJECT_NAME`** in `devcontainer.json` → Your project display name
-- **`PROJECT_NAME`** in `docker-compose.yml` → Your container and volume names
+- **`devcontainer.json`** uses `"name": "${localEnv:PROJECT_NAME}"` to read from `.env`
+- **`docker-compose.yml`** uses `${PROJECT_NAME}-${APP_CONTAINER_SUFFIX}` for container names
+- **All configuration** comes from your `.env` file automatically
 
 ## 🎯 Features Included
 
@@ -224,6 +251,7 @@ Before using, replace these placeholders:
 - ✅ **Minimal Android SDK** (platform-tools for ADB debugging)
 - ✅ **Java 17 JDK** (OpenJDK)
 - ✅ **Essential tools only**: git, curl, nano, jq, tree, zsh, Oh My Zsh
+- ✅ **ImageMagick** (with full comparison support, PDF/Ghostscript, and fonts)
 - ✅ **Pre-configured VS Code extensions** for Flutter/Dart
 - ✅ **Optimized for project debugging** - not heavy development
 - ✅ **Fast container startup** (~2-3 minutes vs 10+ for FlutterBench)
@@ -259,6 +287,55 @@ Before using, replace these placeholders:
    - Container auto-starts with ADB connectivity
    - Use Command Palette → Tasks to run Flutter commands
    - Use F5 to debug, or Run/Debug buttons in VS Code
+
+## 🖼️ ImageMagick Image Comparison
+
+The container includes **ImageMagick** with full support for image comparison operations, ideal for visual regression testing and screenshot comparisons.
+
+### Available Commands
+
+```bash
+# Compare two images and generate a diff
+magick compare -metric RMSE baseline.png candidate.png diff.png
+
+# Compare with absolute error count
+magick compare -metric AE baseline.png candidate.png diff.png
+
+# Get normalized cross-correlation (similarity score)
+magick compare -metric NCC baseline.png candidate.png null:
+
+# Show version and available delegates
+magick identify -version
+```
+
+### Included Components
+
+- ✅ **ImageMagick CLI tools** (`magick`, `compare`, `identify`, `convert`)
+- ✅ **MagickCore & MagickWand libraries** for language bindings
+- ✅ **Ghostscript** for PDF comparison and rasterization
+- ✅ **DejaVu fonts** to prevent missing-glyph errors in text overlays
+
+### Usage Tips
+
+- **Store comparison outputs** in `/workspace/tmp` or similar to persist results
+- **Use metrics**: `RMSE` (root mean square error), `AE` (absolute error), `NCC` (normalized cross-correlation)
+- **Validate installation** runs automatically on container creation via `postCreateCommand`
+
+### Example Workflow
+
+```bash
+# 1. Take baseline screenshots
+flutter test --update-goldens
+
+# 2. Make UI changes
+
+# 3. Generate new screenshots
+flutter test
+
+# 4. Compare with ImageMagick
+mkdir -p tmp
+magick compare -metric RMSE test/goldens/widget_old.png test/goldens/widget_new.png tmp/diff.png
+```
 
 ## 🔍 Troubleshooting
 
