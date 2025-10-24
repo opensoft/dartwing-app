@@ -20,7 +20,7 @@ class AuthConfig {
 
 const keycloakIssuer = 'https://qa.keycloak.tech-corps.com/realms/DartWing';
 const keycloakClientId = 'dartwingmobile';
-const keycloakRedirectUri = 'com.opensoft.dartwing:/oauthredirect';
+const keycloakRedirectUri = 'com.opensoft.dartwing://login-callback';
 const keycloakPostLogoutRedirectUri = keycloakRedirectUri;
 const keycloakDefaultScopes = <String>[
   'openid',
