@@ -1,7 +1,13 @@
 #!/bin/bash
-
+#
 # Simple shell script to check if running in cloud/CI environment
 # This can run without Flutter/Dart being installed
+#
+# Usage:
+#   ./scripts/check_cloud_environment.sh
+#
+# Note: Ensure the script has execute permissions:
+#   chmod +x scripts/check_cloud_environment.sh
 
 echo "=== Cloud/CI Environment Detection ==="
 echo ""
