@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/brett/projects/dartwing/**)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(awk:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter build:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb uninstall:*)",
+      "Bash(adb install:*)",
+      "Bash(adb shell pm list packages:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb logcat:*)",
+      "Bash(cat:*)",
+      "Bash(docker ps:*)",
+      "Bash(curl:*)",
+      "Read(///**)",
+      "Bash(flutter pub get:*)",
+      "Bash(adb:*)",
+      "Bash(flutter --version:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

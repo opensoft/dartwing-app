@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DartWing</string>
+    <string name="appAuthRedirectScheme">com.opensoft.dartwing</string>
+</resources>

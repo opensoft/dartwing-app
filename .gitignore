@@ -158,3 +158,4 @@ coverage/
 *.backup
 *.bak
 *.orig
+sentry.properties
