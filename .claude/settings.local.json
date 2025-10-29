@@ -23,7 +23,8 @@
       "Bash(curl:*)",
       "Read(///**)",
       "Bash(flutter pub get:*)",
-      "Bash(adb:*)"
+      "Bash(adb:*)",
+      "Bash(flutter --version:*)"
     ],
     "deny": [],
     "ask": []

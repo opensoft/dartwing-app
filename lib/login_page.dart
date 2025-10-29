@@ -69,9 +69,20 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       return false; // TODO: ADDWEB
     }
 
+    PaperTrailClient.sendInfoMessageToPaperTrail(
+      'DEBUG: _login called, isDebugMode=$_isDebugMode, '
+      'keycloak=${_selectedKeycloakGateway?.name}, '
+      'dartwing=${_selectedDartWingGateway?.name}, '
+      'healthcare=${_selectedHealthcareGateway?.name}'
+    );
+
     // Apply selected gateways before login (debug mode only)
     if (_isDebugMode && _selectedKeycloakGateway != null &&
         _selectedDartWingGateway != null && _selectedHealthcareGateway != null) {
+
+      PaperTrailClient.sendInfoMessageToPaperTrail(
+        'DEBUG: Applying gateway selection: Keycloak URL=${_selectedKeycloakGateway!.keycloakUrl}'
+      );
 
       // Update auth service with selected Keycloak gateway
       DartWingAppGlobals.authService.updateAuthConfig(
@@ -100,6 +111,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         'Login using gateways: Keycloak=${_selectedKeycloakGateway!.name}, '
         'DartWing=${_selectedDartWingGateway!.name}, '
         'Healthcare=${_selectedHealthcareGateway!.name}'
+      );
+    } else {
+      PaperTrailClient.sendInfoMessageToPaperTrail(
+        'DEBUG: Skipping gateway selection - condition not met'
       );
     }
 
@@ -266,22 +281,35 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     setState(() {
       _selectedPreset = preset;
 
-      switch (preset) {
-        case GatewayPreset.production:
-          final gateway = _availableGateways.firstWhere((g) => g.isDefaultRelease);
-          _selectedKeycloakGateway = gateway;
-          _selectedDartWingGateway = gateway;
-          _selectedHealthcareGateway = gateway;
-          break;
+      try {
+        switch (preset) {
+          case GatewayPreset.production:
+            print('DEBUG: Applying Production preset, available gateways: ${_availableGateways.length}');
+            final gateway = _availableGateways.firstWhere(
+              (g) => g.isDefaultRelease,
+              orElse: () {
+                print('DEBUG: No production gateway found! Using first gateway.');
+                return _availableGateways.first;
+              },
+            );
+            print('DEBUG: Production gateway selected: ${gateway.name}');
+            _selectedKeycloakGateway = gateway;
+            _selectedDartWingGateway = gateway;
+            _selectedHealthcareGateway = gateway;
+            print('DEBUG: Keycloak: ${_selectedKeycloakGateway?.keycloakUrl}');
+            break;
 
-        case GatewayPreset.qa:
-          final gateway = _availableGateways.firstWhere(
-            (g) => g.isDefaultDebug && !g.isLocalContainer,
-          );
-          _selectedKeycloakGateway = gateway;
-          _selectedDartWingGateway = gateway;
-          _selectedHealthcareGateway = gateway;
-          break;
+          case GatewayPreset.qa:
+            print('DEBUG: Applying QA preset');
+            final gateway = _availableGateways.firstWhere(
+              (g) => g.isDefaultDebug && !g.isLocalContainer,
+              orElse: () => _availableGateways.first,
+            );
+            print('DEBUG: QA gateway selected: ${gateway.name}');
+            _selectedKeycloakGateway = gateway;
+            _selectedDartWingGateway = gateway;
+            _selectedHealthcareGateway = gateway;
+            break;
 
         case GatewayPreset.local:
           final localGateway = _availableGateways.firstWhere(
@@ -302,6 +330,15 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           _selectedDartWingGateway ??= _availableGateways.first;
           _selectedHealthcareGateway ??= _availableGateways.first;
           break;
+        }
+      } catch (e) {
+        print('DEBUG: Error applying preset $preset: $e');
+        // Fallback to first available gateway
+        if (_availableGateways.isNotEmpty) {
+          _selectedKeycloakGateway = _availableGateways.first;
+          _selectedDartWingGateway = _availableGateways.first;
+          _selectedHealthcareGateway = _availableGateways.first;
+        }
       }
     });
   }
@@ -332,10 +369,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       });
     };
 
+    // Load gateways immediately in debug mode so they're available
+    // even if user has an existing session
+    if (_isDebugMode) {
+      _loadGateways();
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_isDebugMode) {
-        _loadGateways();
-      }
       _bootstrapSession();
     });
   }
@@ -348,6 +388,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   }
 
   Future<void> _bootstrapSession() async {
+    // In debug mode, always show the login screen with gateway selector
+    // so user can change backend services before logging in
+    if (_isDebugMode) {
+      return;
+    }
+
     final auth = DartWingAppGlobals.authService;
     if (auth.accessToken != null && !_hasLoadedSession) {
       await _updateTokenAndUserInfo();
@@ -381,43 +427,171 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     await _updateTokenAndUserInfo();
   }
 
-  Widget _buildPresetRadio(GatewayPreset preset, String label, bool available) {
-    return RadioListTile<GatewayPreset>(
-      title: Row(
+  Widget _buildGatewayButton({
+    required String title,
+    required GatewayPreset preset,
+    required bool isAvailable,
+    GatewayConfig? gateway,
+  }) {
+    final isSelected = _selectedPreset == preset;
+    final isEnabled = isAvailable && (gateway == null || (gateway.isDartWingAvailable && gateway.isKeycloakAvailable));
+
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? Colors.blue[300] : Colors.grey[300],
+        foregroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+      onPressed: isEnabled ? () {
+        _applyPreset(preset);
+      } : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label),
-          const SizedBox(width: 8),
-          Icon(
-            available ? Icons.check_circle : Icons.cancel,
-            color: available ? Colors.green : Colors.red,
-            size: 16,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Icon(
+                isEnabled ? Icons.check_circle : Icons.cancel,
+                color: isEnabled ? Colors.green : Colors.red,
+              ),
+            ],
           ),
+          if (gateway != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildServiceStatusIcon('Gateway', gateway.isDartWingAvailable),
+                  const SizedBox(width: 12),
+                  _buildServiceStatusIcon('Keycloak', gateway.isKeycloakAvailable),
+                  const SizedBox(width: 12),
+                  _buildServiceStatusIcon('Healthcare', gateway.isHealthcareAvailable),
+                ],
+              ),
+            ),
         ],
       ),
-      value: preset,
-      groupValue: _selectedPreset,
-      onChanged: available ? (value) => _applyPreset(value!) : null,
+    );
+  }
+
+  Widget _buildServiceStatusIcon(String serviceName, bool isAvailable) {
+    final textColor = isAvailable ? Colors.green[700] : Colors.red[700];
+    final iconColor = isAvailable ? Colors.green : Colors.red;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          isAvailable ? Icons.check_circle_outline : Icons.cancel_outlined,
+          size: 16,
+          color: iconColor,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          serviceName,
+          style: TextStyle(
+            fontSize: 12,
+            color: textColor,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildPresetRadioGroup() {
-    return Card(
+    // Get gateway configs for each preset
+    final productionGateway = _availableGateways.firstWhere(
+      (g) => g.isDefaultRelease,
+      orElse: () => GatewayConfig(
+        name: 'Production',
+        keycloakUrl: '',
+        dartWingUrl: '',
+        healthcareUrl: '',
+        isDartWingAvailable: true,
+        isKeycloakAvailable: true,
+        isHealthcareAvailable: true,
+      ),
+    );
+
+    final qaGateway = _availableGateways.firstWhere(
+      (g) => g.isDefaultDebug && !g.isLocalContainer,
+      orElse: () => GatewayConfig(
+        name: 'QA',
+        keycloakUrl: '',
+        dartWingUrl: '',
+        healthcareUrl: '',
+        isDartWingAvailable: true,
+        isKeycloakAvailable: true,
+        isHealthcareAvailable: true,
+      ),
+    );
+
+    final localGateway = _availableGateways.firstWhere(
+      (g) => g.isLocalContainer,
+      orElse: () => GatewayConfig(
+        name: 'Local Development',
+        keycloakUrl: '',
+        dartWingUrl: '',
+        healthcareUrl: '',
+        isLocalContainer: true,
+        isDartWingAvailable: false,
+        isKeycloakAvailable: false,
+        isHealthcareAvailable: false,
+      ),
+    );
+
+    return Container(
       margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Gateway Environment',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            _buildPresetRadio(GatewayPreset.production, 'Production', _isProductionAvailable),
-            _buildPresetRadio(GatewayPreset.qa, 'QA', _isQAAvailable),
-            _buildPresetRadio(GatewayPreset.local, 'Local', _isLocalAvailable),
-            _buildPresetRadio(GatewayPreset.custom, 'Custom', true),
-          ],
-        ),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Gateway Environment',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
+          const SizedBox(height: 16),
+          _buildGatewayButton(
+            title: 'Production',
+            preset: GatewayPreset.production,
+            isAvailable: _isProductionAvailable,
+            gateway: productionGateway,
+          ),
+          const SizedBox(height: 8),
+          _buildGatewayButton(
+            title: 'QA',
+            preset: GatewayPreset.qa,
+            isAvailable: _isQAAvailable,
+            gateway: qaGateway,
+          ),
+          const SizedBox(height: 8),
+          _buildGatewayButton(
+            title: 'Local',
+            preset: GatewayPreset.local,
+            isAvailable: _isLocalAvailable,
+            gateway: localGateway,
+          ),
+          const SizedBox(height: 8),
+          _buildGatewayButton(
+            title: 'Custom',
+            preset: GatewayPreset.custom,
+            isAvailable: true,
+          ),
+        ],
       ),
     );
   }
@@ -473,6 +647,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     return UpgradeAlert(
       child: BaseScaffold(
         loadingOverlayEnabled: _loadingOverlayEnabled,
+        enableKeyboardListener: false, // Disable to allow touch events on gateway selector
         body: Column(
           children: [
             Visibility(
@@ -484,36 +659,43 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                 ),
               ),
             ),
-            Expanded(
-              child: SvgPicture.asset(
-                'lib/dart_wing/gui/images/dart_wing_icon.svg',
-                alignment: Alignment.center,
-              ),
+            const SizedBox(height: 20),
+            SvgPicture.asset(
+              'lib/dart_wing/gui/images/dart_wing_icon.svg',
+              alignment: Alignment.center,
+              height: 120,
             ),
+            const SizedBox(height: 20),
             if (_isDebugMode && _availableGateways.isNotEmpty)
-              SingleChildScrollView(
+              _buildPresetRadioGroup(),
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildPresetRadioGroup(),
-                    const SizedBox(height: 8),
-                    _buildGatewaySelector(
-                      'Keycloak Gateway',
-                      _selectedKeycloakGateway,
-                      (value) => setState(() => _selectedKeycloakGateway = value),
-                    ),
-                    _buildGatewaySelector(
-                      'DartWing Gateway',
-                      _selectedDartWingGateway,
-                      (value) => setState(() => _selectedDartWingGateway = value),
-                    ),
-                    _buildGatewaySelector(
-                      'Healthcare Gateway',
-                      _selectedHealthcareGateway,
-                      (value) => setState(() => _selectedHealthcareGateway = value),
-                    ),
+                    const SizedBox(height: 20),
+                    if (_isDebugMode && _availableGateways.isNotEmpty && _selectedPreset == GatewayPreset.custom) ...[
+                      const SizedBox(height: 8),
+                      _buildGatewaySelector(
+                        'Keycloak Gateway',
+                        _selectedKeycloakGateway,
+                        (value) => setState(() => _selectedKeycloakGateway = value),
+                      ),
+                      _buildGatewaySelector(
+                        'DartWing Gateway',
+                        _selectedDartWingGateway,
+                        (value) => setState(() => _selectedDartWingGateway = value),
+                      ),
+                      _buildGatewaySelector(
+                        'Healthcare Gateway',
+                        _selectedHealthcareGateway,
+                        (value) => setState(() => _selectedHealthcareGateway = value),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ],
                 ),
               ),
+            ),
             Padding(
               padding: const EdgeInsets.all(10),
               child: ElevatedButton(

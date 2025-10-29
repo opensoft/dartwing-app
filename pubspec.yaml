@@ -9,6 +9,7 @@ environment:
   sdk: ^3.9.0
 
 dependencies:
+  sentry_flutter: ^9.7.0
   flutter:
     sdk: flutter
   crypto: ^3.0.6
@@ -39,6 +40,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  sentry_dart_plugin: ^3.1.1
   flutter_test:
     sdk: flutter
   integration_test:
@@ -54,3 +56,9 @@ flutter:
     - .env
     - lib/dart_wing/gui/images/
     - lib/dart_wing/localization/
+
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: flutter
+  org: opensoft-one
