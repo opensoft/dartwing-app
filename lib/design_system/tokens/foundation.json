@@ -1,0 +1,245 @@
+{
+  "$schema": "https://tokens.studio/schemas/figma.tokens.json",
+  "version": "0.1",
+  "groups": {
+    "color": {},
+    "typography": {},
+    "radius": {},
+    "space": {},
+    "elevation": {},
+    "opacity": {},
+    "motion": {},
+    "z": {}
+  },
+  "color": {
+    "bg/surface": {
+      "value": "#FFFFFF"
+    },
+    "bg/surface-variant": {
+      "value": "#F6F7F9"
+    },
+    "bg/elevated": {
+      "value": "#FFFFFF"
+    },
+    "content/primary": {
+      "value": "#121212"
+    },
+    "content/secondary": {
+      "value": "#4A4A4A"
+    },
+    "content/inverse": {
+      "value": "#FFFFFF"
+    },
+    "brand/primary": {
+      "value": "#3B82F6"
+    },
+    "brand/secondary": {
+      "value": "#6366F1"
+    },
+    "brand/tertiary": {
+      "value": "#22C55E"
+    },
+    "stroke/neutral": {
+      "value": "#E2E8F0"
+    },
+    "stroke/strong": {
+      "value": "#CBD5E1"
+    },
+    "state/hover": {
+      "value": "rgba(0,0,0,0.04)"
+    },
+    "state/pressed": {
+      "value": "rgba(0,0,0,0.08)"
+    },
+    "state/focus": {
+      "value": "#1D4ED8"
+    },
+    "alert/info": {
+      "value": "#0EA5E9"
+    },
+    "alert/success": {
+      "value": "#16A34A"
+    },
+    "alert/warning": {
+      "value": "#F59E0B"
+    },
+    "alert/error": {
+      "value": "#DC2626"
+    }
+  },
+  "opacity": {
+    "disabled": {
+      "value": 0.38
+    },
+    "overlay": {
+      "value": 0.5
+    }
+  },
+  "space": {
+    "0": {
+      "value": 0
+    },
+    "1": {
+      "value": 4
+    },
+    "2": {
+      "value": 8
+    },
+    "3": {
+      "value": 12
+    },
+    "4": {
+      "value": 16
+    },
+    "5": {
+      "value": 20
+    },
+    "6": {
+      "value": 24
+    },
+    "7": {
+      "value": 32
+    },
+    "8": {
+      "value": 40
+    },
+    "9": {
+      "value": 48
+    },
+    "10": {
+      "value": 64
+    }
+  },
+  "radius": {
+    "none": {
+      "value": 0
+    },
+    "sm": {
+      "value": 6
+    },
+    "md": {
+      "value": 12
+    },
+    "lg": {
+      "value": 16
+    },
+    "xl": {
+      "value": 24
+    },
+    "full": {
+      "value": 999
+    }
+  },
+  "elevation": {
+    "z1": {
+      "value": {
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "color": "rgba(0,0,0,0.08)"
+      }
+    },
+    "z2": {
+      "value": {
+        "x": 0,
+        "y": 2,
+        "blur": 6,
+        "spread": 0,
+        "color": "rgba(0,0,0,0.12)"
+      }
+    },
+    "z3": {
+      "value": {
+        "x": 0,
+        "y": 6,
+        "blur": 16,
+        "spread": 0,
+        "color": "rgba(0,0,0,0.16)"
+      }
+    }
+  },
+  "z": {
+    "popover": {
+      "value": 1100
+    },
+    "modal": {
+      "value": 1200
+    },
+    "toast": {
+      "value": 1300
+    }
+  },
+  "motion": {
+    "duration/fast": {
+      "value": 120
+    },
+    "duration/normal": {
+      "value": 200
+    },
+    "duration/slow": {
+      "value": 320
+    },
+    "easing/standard": {
+      "value": "cubic-bezier(0.2, 0, 0, 1)"
+    },
+    "easing/decelerate": {
+      "value": "cubic-bezier(0, 0, 0, 1)"
+    },
+    "easing/accelerate": {
+      "value": "cubic-bezier(0.3, 0, 1, 1)"
+    }
+  },
+  "typography": {
+    "family/sans": {
+      "value": "Inter, SF Pro, Roboto, system-ui, -apple-system"
+    },
+    "size/scale": {
+      "xs": {
+        "value": 12
+      },
+      "sm": {
+        "value": 14
+      },
+      "md": {
+        "value": 16
+      },
+      "lg": {
+        "value": 18
+      },
+      "xl": {
+        "value": 20
+      },
+      "2xl": {
+        "value": 24
+      },
+      "3xl": {
+        "value": 28
+      },
+      "4xl": {
+        "value": 32
+      }
+    },
+    "line/compact": {
+      "value": 1.2
+    },
+    "line/standard": {
+      "value": 1.4
+    },
+    "line/comfortable": {
+      "value": 1.6
+    },
+    "weight/regular": {
+      "value": 400
+    },
+    "weight/medium": {
+      "value": 500
+    },
+    "weight/semibold": {
+      "value": 600
+    },
+    "weight/bold": {
+      "value": 700
+    }
+  }
+}

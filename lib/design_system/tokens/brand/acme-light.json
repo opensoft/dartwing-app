@@ -1,0 +1,22 @@
+{
+  "$description": "Acme brand theme (light)",
+  "color": {
+    "brand/primary": {
+      "value": "#FF5A1F"
+    },
+    "brand/secondary": {
+      "value": "#111827"
+    }
+  },
+  "btn/primary/bg": {
+    "value": "{color.brand/primary}"
+  },
+  "nav/indicator": {
+    "value": "{color.brand/primary}"
+  },
+  "typography": {
+    "family/sans": {
+      "value": "'Acme Sans', {typography.family/sans}"
+    }
+  }
+}

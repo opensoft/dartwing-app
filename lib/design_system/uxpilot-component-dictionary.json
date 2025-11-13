@@ -1,0 +1,25 @@
+{
+  "components": {
+    "Button/Primary": "dw-button / variant=primary",
+    "Button/Secondary": "dw-button / variant=secondary",
+    "Input/Outline": "dw-input / variant=outline",
+    "Card/Elevated": "dw-card / variant=elevated",
+    "Modal/Standard": "dw-modal / size=md",
+    "Nav/Bottom": "dw-nav-bottom / items=3-5",
+    "Tabs/Top": "dw-tabs / style=underline"
+  },
+  "props": {
+    "sizes": [
+      "sm",
+      "md",
+      "lg"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "pressed",
+      "disabled",
+      "focus"
+    ]
+  }
+}

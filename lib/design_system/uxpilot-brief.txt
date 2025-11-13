@@ -1,0 +1,27 @@
+Use the published Figma library “Dartwing DS”.
+Platform: iOS
+Brand: Acme (light)
+Mode: Light
+Screen size: mobile 390×844
+
+Build these screens using ONLY components from the library:
+1) Sign In
+   - Fields: Email (outline), Password (outline)
+   - Primary button: “Sign in”
+   - Link button: “Forgot password?”
+   - Footer: “Don’t have an account? Sign up”
+
+2) Home (bottom nav with 4 items)
+   - App bar title: “Home”
+   - CTA card (elevated)
+   - List of 6 items using “dw-list-item” (avatar + title + meta)
+
+3) Settings
+   - Grouped list rows with toggles
+   - Tertiary buttons for “Privacy Policy” and “Help”
+
+Constraints:
+- Buttons: use dw-button (variant=primary|secondary|link; size=sm|md|lg)
+- Inputs: use dw-input (variant=outline)
+- Follow variant props: variant, size, state, withIcon
+- Use published text styles: ty/body, ty/title, ty/display

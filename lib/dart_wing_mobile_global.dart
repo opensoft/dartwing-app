@@ -1,12 +1,8 @@
-import 'package:keycloak_wrapper/keycloak_wrapper.dart';
+import 'auth/auth_config.dart';
+import 'auth/auth_service.dart';
 
 class DartWingAppGlobals {
-  static var keycloakWrapper = KeycloakWrapper(
-    config: KeycloakConfig(
-      bundleIdentifier: 'com.opensoft.dartwing',
-      clientId: 'dartwingmobile',
-      frontendUrl: 'https://qa.keycloak.tech-corps.com/',
-      realm: 'DartWing',
-    ),
+  static final AuthService authService = AuthService(
+    config: keycloakAuthConfig,
   );
 }

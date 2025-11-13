@@ -4,6 +4,30 @@
 
 This directory contains utility scripts for Flutter DevContainer project setup and validation.
 
+## 🚨 Critical Scripts (DO NOT DELETE)
+
+### `check-or-attach.sh`
+
+**CRITICAL - Required for proper container lifecycle management**
+
+This script implements smart container management for devcontainers:
+
+- **If container is running**: Allows VSCode to attach without recreation
+- **If container is stopped**: Cleans up the stopped container to prevent conflicts
+- **If no container exists**: Allows fresh container creation
+
+**Used by**: `devcontainer.json` initializeCommand
+**Impact if deleted**: Container name conflicts, failed devcontainer starts, manual cleanup required
+
+### `startup.sh` & `ready-check.sh`
+
+**CRITICAL - Required for container initialization**
+
+These scripts handle post-start container setup and readiness validation.
+
+**Used by**: `devcontainer.json` postStartCommand and postAttachCommand
+**Impact if deleted**: Container may start but Flutter/Android environment won't be properly configured
+
 ## 🔧 Scripts
 
 ### `manual-setup-project.sh`
@@ -13,6 +37,7 @@ This directory contains utility scripts for Flutter DevContainer project setup a
 #### When To Use
 
 ✅ **Use this script when:**
+
 - You manually copied the template files (instead of using `new-flutter-project.sh`)
 - You're debugging container configuration issues
 - You modified your `.env` file and want to validate the changes
@@ -20,6 +45,7 @@ This directory contains utility scripts for Flutter DevContainer project setup a
 - You want to understand what configuration is required
 
 ❌ **Don't use this script when:**
+
 - You used `new-flutter-project.sh` (it handles setup automatically)
 - Your container is already working fine
 - You're just making code changes (not configuration changes)
@@ -27,20 +53,24 @@ This directory contains utility scripts for Flutter DevContainer project setup a
 #### What It Does
 
 1. **🔍 Environment File Management**
+
    - Creates `.env` from `.env.example` if missing
    - Validates all required environment variables are set
    - Checks for proper variable formats and values
 
 2. **✅ Configuration Validation**
+
    - Ensures `PROJECT_NAME` uses valid characters only
    - Verifies `USER_UID`/`USER_GID` are numeric and match your system
    - Validates `FLUTTER_VERSION` and other required settings
 
 3. **🏗️ Infrastructure Checks**
+
    - Verifies shared ADB infrastructure path exists
    - Provides guidance if infrastructure is missing
 
 4. **🐳 Docker Environment**
+
    - Confirms Docker is installed and running
    - Tests Docker Compose configuration syntax
    - Validates container can be built with current settings
@@ -53,6 +83,7 @@ This directory contains utility scripts for Flutter DevContainer project setup a
 #### How To Use
 
 ##### Basic Usage
+
 ```bash
 # Navigate to your Flutter project directory
 cd ~/projects/my-flutter-app
@@ -62,6 +93,7 @@ cd ~/projects/my-flutter-app
 ```
 
 ##### Typical Workflow - Manual Template Setup
+
 ```bash
 # 1. Create Flutter project
 flutter create my-flutter-app
@@ -84,6 +116,7 @@ cp .env.example .env
 ```
 
 ##### Debugging Workflow
+
 ```bash
 # Container won't start? Check configuration
 ./scripts/manual-setup-project.sh
@@ -136,6 +169,7 @@ id  # Check your current UID/GID
 #### Common Issues & Solutions
 
 ##### Missing .env File
+
 ```
 ⚠️  .env file not found!
 📋 Creating .env from .env.example...
@@ -153,6 +187,7 @@ id  # Check your current UID/GID
 **Solution**: Edit the created `.env` file with your settings, then run the script again.
 
 ##### UID/GID Mismatch
+
 ```
 ⚠️  User ID mismatch detected:
    .env UID:GID = 1000:1000
@@ -166,6 +201,7 @@ id  # Check your current UID/GID
 **Solution**: Update your `.env` file with the correct UID/GID values.
 
 ##### Invalid Project Name
+
 ```
 ❌ PROJECT_NAME contains invalid characters
    Current: my flutter app
@@ -175,6 +211,7 @@ id  # Check your current UID/GID
 **Solution**: Change `PROJECT_NAME` in `.env` to use only valid characters (e.g., `my-flutter-app`).
 
 ##### Docker Not Running
+
 ```
 ❌ Docker daemon not running
    Please start Docker Desktop or Docker service
@@ -185,25 +222,31 @@ id  # Check your current UID/GID
 ## 🔄 Comparison: Manual vs Automated Setup
 
 ### Automated Setup (`new-flutter-project.sh`)
+
 ✅ **Pros:**
+
 - Handles everything automatically
 - Creates Flutter project + DevContainer setup
 - No validation needed
 - Best for new projects
 
 ❌ **Cons:**
+
 - Less control over the process
 - Must use specific directory structure
 - Can't customize template before applying
 
 ### Manual Setup (+ `manual-setup-project.sh`)
+
 ✅ **Pros:**
+
 - Full control over template customization
 - Can apply to existing projects
 - Can modify template before copying
 - Better for learning/understanding
 
 ❌ **Cons:**
+
 - More steps required
 - Need to validate configuration manually
 - Easy to miss required steps

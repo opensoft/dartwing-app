@@ -1,13 +1,40 @@
 {
-  "name": "DartWing App",
-  "dockerComposeFile": "docker-compose-with-adb.yml",
+  // COPILOT RULE: The "name" field should read PROJECT_NAME from .env file
+  // SOLUTION: Docker Compose loads .env and sets PROJECT_NAME as container environment variable
+  // We use ${containerEnv:PROJECT_NAME} to read it from the running container
+  // Fallback to generic name if container env is not available yet (cannot use nested variables)
+  "name": "${containerEnv:PROJECT_NAME:Flutter DevContainer}",
+  "_devcontainer_version": "1.1.0",
+  "_template_version": "flutter-devcontainer-1.1.0",
+  "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspace",
+
+  "forwardPorts": [1455],
+
+  "portsAttributes": {
+    "1455": {
+      "label": "Codex auth callback",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "mounts": [
+    // Make local Claude CLI config available inside the container
+    "source=${localEnv:HOME}/.claude,target=/root/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.codex,target=/root/.codex,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.codex,target=${localEnv:HOME}/.codex,type=bind",
+    "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind"
+  ],
 
   "overrideCommand": false,
 
   "initializeCommand": {
-    "adb": "bash -c 'source .devcontainer/.env && ADB_INFRASTRUCTURE_PROJECT_NAME=$ADB_INFRASTRUCTURE_PROJECT_NAME ${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh'",
+    // CRITICAL: Do not remove this command - it implements smart container management
+    // Checks if container is running (attaches) or stopped (cleans up) - prevents conflicts
+    // See .devcontainer/scripts/check-or-attach.sh for implementation details
+    "check-or-attach": "${localWorkspaceFolder}/.devcontainer/scripts/check-or-attach.sh",
+    "adb": "bash -c 'source ${localWorkspaceFolder}/.devcontainer/.env && ${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/start-adb-if-needed.sh'",
     "dartwingers-check": "${localWorkspaceFolder}/../../../infrastructure/mobile/android/adb/scripts/check-dartwingers-service.sh"
   },
 
@@ -15,77 +42,60 @@
     "setup-flutter-project": "echo 'Container created - Flutter setup will run on start'"
   },
 
-  "postStartCommand": [
-    "echo '🚀 Container started - initializing Flutter environment...'",
-    "echo '🔧 Ensuring Dartwingers service dependency...' && ../../../infrastructure/mobile/android/adb/scripts/start-dartwingers-service-if-needed-minimal.sh",
-    "flutter --version && echo '✅ Flutter SDK ready' || echo '⚠️  Flutter SDK not ready yet'",
-    "adb devices && echo '✅ ADB service connected' || echo '🔄 ADB service connecting...'",
-    "timeout 300 .devcontainer/scripts/setup-flutter-project.sh && echo '✅ Flutter project setup complete' || echo '🔄 Flutter setup running in background...'",
-    "flutter doctor -v",
-    "flutter pub get",
-    "echo '🎯 Ready for development!'"
-  ],
+  "postStartCommand": ".devcontainer/scripts/startup.sh",
 
   "postAttachCommand": ".devcontainer/scripts/ready-check.sh",
+
+  "containerEnv": {
+    "SHELL": "/bin/zsh",
+    "TERM_PROGRAM": "${localEnv:TERM_PROGRAM}",
+    "WARP_HONOR_PS1": "1",
+    "WARP_USE_SSH_WRAPPER": "${localEnv:WARP_USE_SSH_WRAPPER}",
+    "WARP_IS_LOCAL_SHELL_SESSION": "${localEnv:WARP_IS_LOCAL_SHELL_SESSION}"
+  },
 
   "customizations": {
     "vscode": {
       "extensions": [
+        // dart and flutter extensions
         "Dart-Code.dart-code",
         "Dart-Code.flutter",
+        // infrastructure extensions
         "ms-azuretools.vscode-docker",
-        "ms-vscode.vscode-json",
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
-        "github.vscode-pull-request-github",
-        "github.vscode-github-actions",
-        "github.copilot"
+        // ai extensions
+        "anthropic.claude-code",
+        "openai.chatgpt",
+        "eamodio.gitlens",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
       ],
       "settings": {
-        "dart.flutterSdkPath": "/opt/flutter",
+        "dart.flutterSdkPath": "/flutter",
         "dart.debugExternalLibraries": true,
         "dart.debugSdkLibraries": false,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll": "explicit"
         },
-        "dart.showTodos": true,
-        "dart.analysisExcludedFolders": [
-          ".dart_tool",
-          "build"
-        ],
-        "files.exclude": {
-          "**/.git": true,
-          "**/.DS_Store": true,
-          "**/build": true,
-          "**/.dart_tool": true
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh",
+            "args": ["-l"]
+          },
+          "Codex": {
+            "path": "/bin/zsh",
+            "args": ["-c", "codex cmd; exec zsh"]
+          },
+          "Claude Code": {
+            "path": "/bin/zsh",
+            "args": ["-c", "claude cmd; exec zsh"]
+          }
         },
-        "dart.enableSdkFormatter": true,
-        "dart.lineLength": 80,
-        "dart.warnWhenEditingFilesOutsideWorkspace": true,
-        "dart.flutterCreateAndroidLanguage": "kotlin",
-        "dart.flutterCreateIOSLanguage": "swift",
-        "terminal.integrated.shell.linux": "/bin/zsh"
+        "terminal.integrated.defaultProfile.linux": "zsh"
       }
     }
   },
-  "containerEnv": {
-    "FLUTTER_ROOT": "/opt/flutter",
-    "ANDROID_SDK_ROOT": "/opt/android-sdk",
-    "ANDROID_HOME": "/opt/android-sdk",
-    "ADB_SERVER_SOCKET": "tcp:adb-service:5037"
-  },
-  "forwardPorts": [
-    3000,
-    8180,
-    8000,
-    // Note: No port 5037 - container connects to host ADB server
-    5554,  // Emulator console port
-    5555,  // Emulator ADB port
-    42000,
-    42001,
-    42002,
-    42003,
-    42004
-  ]
+  "remoteUser": "${localEnv:USER:vscode}"
 }
