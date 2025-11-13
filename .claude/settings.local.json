@@ -24,7 +24,9 @@
       "Read(///**)",
       "Bash(flutter pub get:*)",
       "Bash(adb:*)",
-      "Bash(flutter --version:*)"
+      "Bash(flutter --version:*)",
+      "Bash(chmod:*)",
+      "Bash(./scripts/test-smart-attach.sh:*)"
     ],
     "deny": [],
     "ask": []

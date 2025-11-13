@@ -1,0 +1,21 @@
+{
+  "typography": {
+    "family/sans": {
+      "value": "Roboto, system-ui, Inter"
+    }
+  },
+  "elevation": {
+    "z2": {
+      "value": {
+        "x": 0,
+        "y": 2,
+        "blur": 6,
+        "spread": 0,
+        "color": "rgba(0,0,0,0.14)"
+      }
+    }
+  },
+  "btn/primary/radius": {
+    "value": "{radius.md}"
+  }
+}

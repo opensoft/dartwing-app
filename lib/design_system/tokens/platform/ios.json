@@ -1,0 +1,13 @@
+{
+  "typography": {
+    "family/sans": {
+      "value": "SF Pro, -apple-system, Inter"
+    }
+  },
+  "blur/system/thin": {
+    "value": 20
+  },
+  "btn/primary/radius": {
+    "value": "{radius.full}"
+  }
+}

@@ -68,5 +68,8 @@
       "url": "https://json.schemastore.org/pubspec.json"
     }
   ],
-  "remote.autoForwardPortsFallback": 0
+  "remote.autoForwardPortsFallback": 0,
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": true
+  }
 }

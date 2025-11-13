@@ -1,0 +1,10 @@
+{
+  "typography": {
+    "family/sans": {
+      "value": "Inter, system-ui, Segoe UI"
+    }
+  },
+  "focus/outline/width": {
+    "value": 2
+  }
+}

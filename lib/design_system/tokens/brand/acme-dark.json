@@ -1,0 +1,11 @@
+{
+  "$description": "Acme brand theme (dark)",
+  "color": {
+    "brand/primary": {
+      "value": "#FF7A3A"
+    },
+    "brand/secondary": {
+      "value": "#F3F4F6"
+    }
+  }
+}

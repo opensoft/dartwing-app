@@ -1,0 +1,58 @@
+{
+  "color": {
+    "bg/surface": {
+      "value": "#0B0B0C"
+    },
+    "bg/surface-variant": {
+      "value": "#141519"
+    },
+    "bg/elevated": {
+      "value": "#15161A"
+    },
+    "content/primary": {
+      "value": "#F5F6F8"
+    },
+    "content/secondary": {
+      "value": "#C7CBD1"
+    },
+    "content/inverse": {
+      "value": "#0B0B0C"
+    },
+    "brand/primary": {
+      "value": "#60A5FA"
+    },
+    "brand/secondary": {
+      "value": "#818CF8"
+    },
+    "brand/tertiary": {
+      "value": "#34D399"
+    },
+    "stroke/neutral": {
+      "value": "#2A2E35"
+    },
+    "stroke/strong": {
+      "value": "#3A3F47"
+    },
+    "state/hover": {
+      "value": "rgba(255,255,255,0.06)"
+    },
+    "state/pressed": {
+      "value": "rgba(255,255,255,0.12)"
+    },
+    "state/focus": {
+      "value": "#60A5FA"
+    },
+    "alert/info": {
+      "value": "#38BDF8"
+    },
+    "alert/success": {
+      "value": "#22C55E"
+    },
+    "alert/warning": {
+      "value": "#FBBF24"
+    },
+    "alert/error": {
+      "value": "#F87171"
+    }
+  }
+}
