@@ -103,8 +103,7 @@ RUN sudo mkdir -p $FLUTTER_HOME \
   git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git $FLUTTER_HOME; \
   else \
   VERSION_NUMBER=$(echo "$FLUTTER_VERSION" | sed 's/^v//'); \
-  curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${VERSION_NUMBER}-stable.tar.xz | sudo tar -xJC /opt; \
-  sudo mv /opt/flutter $FLUTTER_HOME; \
+  curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${VERSION_NUMBER}-stable.tar.xz | sudo tar -xJC $(dirname $FLUTTER_HOME); \
   fi \
   && sudo chown -R $USER_NAME:$USER_NAME $FLUTTER_HOME
 

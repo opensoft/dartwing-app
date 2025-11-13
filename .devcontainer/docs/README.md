@@ -262,6 +262,25 @@ Before using, replace these placeholders:
    - Use Command Palette → Tasks to run Flutter commands
    - Use F5 to debug, or Run/Debug buttons in VS Code
 
+## 📚 Documentation
+
+### Container Lifecycle Management
+- **[CHECK-OR-ATTACH.md](CHECK-OR-ATTACH.md)** - Complete guide to the smart attach system that checks if containers are running and attaches instead of recreating
+- **[SMART-ATTACH.md](SMART-ATTACH.md)** - Overview of smart attach technology
+- **[CONTAINER-LIFECYCLE-TESTING.md](CONTAINER-LIFECYCLE-TESTING.md)** - Testing container lifecycle
+
+### Android & Emulator Setup
+- **[ANDROID-DEVELOPMENT.md](ANDROID-DEVELOPMENT.md)** - Android development setup
+- **[EMULATOR-SETUP.md](EMULATOR-SETUP.md)** - Emulator configuration
+- **[README-ADB-Service.md](README-ADB-Service.md)** - ADB service documentation
+
+### Networking & Infrastructure
+- **[NETWORKING.md](NETWORKING.md)** - Network configuration guide
+
+### Other Guides
+- **[QUICK-START.md](QUICK-START.md)** - Quick reference for common tasks
+- **[CI_SETUP.md](CI_SETUP.md)** - CI/CD setup documentation
+
 ## 🔍 Troubleshooting
 
 ### Container Build Issues

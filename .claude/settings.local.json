@@ -26,7 +26,8 @@
       "Bash(adb:*)",
       "Bash(flutter --version:*)",
       "Bash(chmod:*)",
-      "Bash(./scripts/test-smart-attach.sh:*)"
+      "Bash(./scripts/test-smart-attach.sh:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
