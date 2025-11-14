@@ -14,7 +14,7 @@ analyzer:
     # Prefer excluding only files that directly depend on the unavailable submodule.
     # If possible, gate submodule-dependent imports in Dart files using conditional exports.
     # Exclude only the submodule stubs (adjust pattern as needed):
-    - lib/dart_wing*.dart
+    - lib/dart_wing/**
     # If analysis errors occur in CI due to missing submodules, consider ignoring them temporarily.
 
 linter:

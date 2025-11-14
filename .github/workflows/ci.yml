@@ -328,8 +328,13 @@ jobs:
         ls -lh build/app/outputs/flutter-apk/
 
         if [ ! -f build/app/outputs/flutter-apk/dartwing-debug.apk ] && [ ! -f build/app/outputs/flutter-apk/dartwing-release-unsigned.apk ]; then
-          echo "❌ No APK files found - cannot build Docker image"
-          exit 1
+          if [ -f build/app/outputs/flutter-apk/build-skipped.info ]; then
+            echo "ℹ️ Build was intentionally skipped (build-skipped.info found). Skipping Docker publish step."
+            exit 0
+          else
+            echo "❌ No APK files found - cannot build Docker image"
+            exit 1
+          fi
         else
           echo "✅ APK files found"
         fi

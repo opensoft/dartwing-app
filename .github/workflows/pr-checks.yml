@@ -45,7 +45,7 @@ jobs:
       run: |
         echo "Checking for merge conflict markers..."
         # Check for merge conflict markers using pattern that avoids self-detection
-        CONFLICT_PATTERNS="<<<<<<<|=======|>>>>>>>"
+        CONFLICT_PATTERNS="^<<<<<<< |^=======$|^>>>>>>> "
         if grep -r -E "$CONFLICT_PATTERNS" --include="*.dart" --include="*.yaml" --include="*.yml" --exclude-dir=".github" .; then
           echo "❌ Merge conflict markers found!"
           exit 1
