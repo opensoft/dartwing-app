@@ -27,7 +27,16 @@
       "Bash(flutter --version:*)",
       "Bash(chmod:*)",
       "Bash(./scripts/test-smart-attach.sh:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(flutter devices:*)",
+      "Bash(flutter emulators:*)",
+      "Bash(echo:*)",
+      "Bash(ping:*)",
+      "Bash(flutter clean:*)",
+      "Bash(dart run build_runner:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(flutter attach:*)"
     ],
     "deny": [],
     "ask": []

@@ -24,11 +24,11 @@ services:
         DEBUG_MODE: ${DEBUG_MODE:-false}
     
     # Container configuration from .env
-    container_name: ${PROJECT_NAME:-Flutter-Dev}-${APP_CONTAINER_SUFFIX:-app}
+    container_name: ${PROJECT_NAME:-Flutter}
     
     # Labels for devcontainer metadata
     labels:
-      - "devcontainer.metadata.project_name=${PROJECT_NAME:-Flutter-Dev}"
+      - "devcontainer.metadata.project_name=${PROJECT_NAME:-Flutter}"
     
     # Run as user specified in .env with defaults
     user: "${USER_UID:-1000}:${USER_GID:-1000}"

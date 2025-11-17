@@ -33,7 +33,7 @@ The startup process now uses marker files in `/tmp/dartwing-markers/`:
 
 ```bash
 # From host machine
-cd /home/brett/projects/dartwingers/dartwing/appDartwing
+cd /home/brett/projects/dartwingers/dartwing/dartwing-app
 
 # Open in VS Code devcontainer
 code .

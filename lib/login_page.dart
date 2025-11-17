@@ -46,7 +46,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   GatewayConfig? _selectedKeycloakGateway;
   GatewayConfig? _selectedDartWingGateway;
   GatewayConfig? _selectedHealthcareGateway;
-  final bool _isDebugMode = !bool.fromEnvironment('dart.vm.product');
   GatewayPreset _selectedPreset = GatewayPreset.local;
 
   // Gateway availability
@@ -70,14 +69,16 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     }
 
     PaperTrailClient.sendInfoMessageToPaperTrail(
-      'DEBUG: _login called, isDebugMode=$_isDebugMode, '
+      'DEBUG: _login called, isDebugMode=$kDebugMode, '
       'keycloak=${_selectedKeycloakGateway?.name}, '
       'dartwing=${_selectedDartWingGateway?.name}, '
       'healthcare=${_selectedHealthcareGateway?.name}'
     );
 
-    // Apply selected gateways before login (debug mode only)
-    if (_isDebugMode && _selectedKeycloakGateway != null &&
+    // Apply selected gateways before login
+    // In debug mode: Use selected gateway from UI
+    // In release mode: GatewayManager.getCurrentGateway() will return production gateway
+    if (_selectedKeycloakGateway != null &&
         _selectedDartWingGateway != null && _selectedHealthcareGateway != null) {
 
       PaperTrailClient.sendInfoMessageToPaperTrail(
@@ -371,7 +372,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
     // Load gateways immediately in debug mode so they're available
     // even if user has an existing session
-    if (_isDebugMode) {
+    if (kDebugMode) {
       _loadGateways();
     }
 
@@ -390,7 +391,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<void> _bootstrapSession() async {
     // In debug mode, always show the login screen with gateway selector
     // so user can change backend services before logging in
-    if (_isDebugMode) {
+    if (kDebugMode) {
       return;
     }
 
@@ -434,6 +435,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     GatewayConfig? gateway,
   }) {
     final isSelected = _selectedPreset == preset;
+    // Healthcare is optional - only require DartWing and Keycloak to be available
     final isEnabled = isAvailable && (gateway == null || (gateway.isDartWingAvailable && gateway.isKeycloakAvailable));
 
     return ElevatedButton(
@@ -464,11 +466,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  _buildServiceStatusIcon('Gateway', gateway.isDartWingAvailable),
+                  _buildServiceStatusIcon('Gateway', gateway.isDartWingAvailable, required: true),
                   const SizedBox(width: 12),
-                  _buildServiceStatusIcon('Keycloak', gateway.isKeycloakAvailable),
+                  _buildServiceStatusIcon('Keycloak', gateway.isKeycloakAvailable, required: true),
                   const SizedBox(width: 12),
-                  _buildServiceStatusIcon('Healthcare', gateway.isHealthcareAvailable),
+                  _buildServiceStatusIcon('Healthcare', gateway.isHealthcareAvailable, required: false),
                 ],
               ),
             ),
@@ -477,15 +479,22 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildServiceStatusIcon(String serviceName, bool isAvailable) {
-    final textColor = isAvailable ? Colors.green[700] : Colors.red[700];
-    final iconColor = isAvailable ? Colors.green : Colors.red;
+  Widget _buildServiceStatusIcon(String serviceName, bool isAvailable, {bool required = true}) {
+    // For optional services, show orange/warning color instead of red when unavailable
+    final textColor = isAvailable
+        ? Colors.green[700]
+        : (required ? Colors.red[700] : Colors.orange[700]);
+    final iconColor = isAvailable
+        ? Colors.green
+        : (required ? Colors.red : Colors.orange);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
-          isAvailable ? Icons.check_circle_outline : Icons.cancel_outlined,
+          isAvailable
+              ? Icons.check_circle_outline
+              : (required ? Icons.cancel_outlined : Icons.warning_outlined),
           size: 16,
           color: iconColor,
         ),
@@ -666,14 +675,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               height: 120,
             ),
             const SizedBox(height: 20),
-            if (_isDebugMode && _availableGateways.isNotEmpty)
+            if (kDebugMode && _availableGateways.isNotEmpty)
               _buildPresetRadioGroup(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    if (_isDebugMode && _availableGateways.isNotEmpty && _selectedPreset == GatewayPreset.custom) ...[
+                    if (kDebugMode && _availableGateways.isNotEmpty && _selectedPreset == GatewayPreset.custom) ...[
                       const SizedBox(height: 8),
                       _buildGatewaySelector(
                         'Keycloak Gateway',

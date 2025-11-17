@@ -64,12 +64,15 @@
         "ms-azuretools.vscode-docker",
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
-        // ai extensions
+        "eamodio.gitlens",
+        "k--kato.docomment",
+        // AI assistance extensions
         "anthropic.claude-code",
         "openai.chatgpt",
-        "eamodio.gitlens",
         "GitHub.copilot",
-        "GitHub.copilot-chat"
+        "GitHub.copilot-chat",
+        "Google.geminicodeassistant",
+        "google.gemini-cli-vscode-ide-companion"
       ],
       "settings": {
         "dart.flutterSdkPath": "/flutter",
