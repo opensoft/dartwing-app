@@ -295,7 +295,7 @@ class _TestFormAppState extends State<TestFormApp> {
   }
   void _validateEmail() {
     final email = _emailController.text;
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final emailRegex = RegExp(r'^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$');
     
     setState(() {
       _validationMessage = emailRegex.hasMatch(email) ? 'Valid email' : 'Invalid email';
